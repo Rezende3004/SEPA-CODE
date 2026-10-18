@@ -4,7 +4,13 @@ from typing import Any
 
 from django.db.models import Q, QuerySet
 
-from common.permissions import is_administrador, is_aluno, is_profissional, is_responsavel
+from common.permissions import (
+    is_admin_global,
+    is_administrador,
+    is_aluno,
+    is_profissional,
+    is_responsavel,
+)
 
 
 class ScopedQuerysetMixin:
@@ -26,7 +32,11 @@ class AlunoScopedQuerysetMixin(ScopedQuerysetMixin):
 
     def scope_queryset(self, queryset: QuerySet, user: Any) -> QuerySet:
         if is_administrador(user):
-            return queryset
+            if is_admin_global(user):
+                return queryset
+            if user.instituicao_id is None:
+                return queryset.none()
+            return queryset.filter(usuario__instituicao_id=user.instituicao_id)
         if is_profissional(user):
             return queryset.filter(usuario__instituicao_id=user.instituicao_id)
         if is_responsavel(user):
@@ -41,7 +51,11 @@ class AlunoRelacionadoScopedQuerysetMixin(ScopedQuerysetMixin):
 
     def scope_queryset(self, queryset: QuerySet, user: Any) -> QuerySet:
         if is_administrador(user):
-            return queryset
+            if is_admin_global(user):
+                return queryset
+            if user.instituicao_id is None:
+                return queryset.none()
+            return queryset.filter(aluno__usuario__instituicao_id=user.instituicao_id)
         if is_profissional(user):
             return queryset.filter(aluno__usuario__instituicao_id=user.instituicao_id)
         if is_responsavel(user):
@@ -56,7 +70,11 @@ class InstituicaoScopedQuerysetMixin(ScopedQuerysetMixin):
 
     def scope_queryset(self, queryset: QuerySet, user: Any) -> QuerySet:
         if is_administrador(user):
-            return queryset
+            if is_admin_global(user):
+                return queryset
+            if user.instituicao_id is None:
+                return queryset.none()
+            return queryset.filter(instituicao_id=user.instituicao_id)
         if user.instituicao_id is None:
             return queryset.none()
         return queryset.filter(instituicao_id=user.instituicao_id)
@@ -74,7 +92,11 @@ class PlanoScopeMixin(AlunoRelacionadoScopedQuerysetMixin):
 class UsuarioScopeMixin(ScopedQuerysetMixin):
     def scope_queryset(self, queryset: QuerySet, user: Any) -> QuerySet:
         if is_administrador(user):
-            return queryset
+            if is_admin_global(user):
+                return queryset
+            if user.instituicao_id is None:
+                return queryset.filter(id=user.id)
+            return queryset.filter(Q(id=user.id) | Q(instituicao_id=user.instituicao_id))
         if user.instituicao_id is None:
             return queryset.filter(id=user.id)
         return queryset.filter(Q(id=user.id) | Q(instituicao_id=user.instituicao_id))

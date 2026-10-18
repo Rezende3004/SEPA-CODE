@@ -19,7 +19,6 @@ from common.permissions import (
     IsProfissional,
     IsProfissionalOrAdmin,
     can_view_aluno,
-    is_administrador,
 )
 
 
@@ -49,7 +48,7 @@ class RecomendacaoViewSet(
         user = self.request.user
         if not getattr(user, "is_authenticated", False):
             return queryset.none()
-        if not is_administrador(user):
+        if not user.is_superuser:
             queryset = queryset.filter(analise__aluno__usuario__instituicao_id=user.instituicao_id)
 
         aluno_id = self.request.query_params.get("aluno")

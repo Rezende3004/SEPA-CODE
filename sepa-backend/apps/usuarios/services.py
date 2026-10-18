@@ -80,6 +80,12 @@ def criar_aluno(executante: Usuario, dados: dict, request=None) -> Aluno:
         )
     if is_profissional(executante) and instituicao.id != executante.instituicao_id:
         raise ValidationError({"responsavel_id": ["O responsável pertence a outra instituição."]})
+    if (
+        executante.tipo_usuario == Usuario.TipoUsuario.ADMINISTRADOR
+        and not is_admin_global(executante)
+        and (executante.instituicao_id is None or instituicao.id != executante.instituicao_id)
+    ):
+        raise PermissionDenied("Administradores institucionais só gerenciam sua instituição.")
 
     email = dados["email"].strip().lower()
     if Usuario.objects.filter(email__iexact=email).exists():
@@ -109,8 +115,12 @@ def criar_aluno(executante: Usuario, dados: dict, request=None) -> Aluno:
 
 
 @transaction.atomic
-def criar_profissional_admin(dados: dict, request=None) -> Profissional:
+def criar_profissional_admin(dados: dict, executante: Usuario, request=None) -> Profissional:
     instituicao = _instituicao_por_id(dados["instituicao_id"])
+    if not executante.is_superuser and instituicao.id != executante.instituicao_id:
+        raise PermissionDenied(
+            "Administradores institucionais só podem criar contas na própria instituição."
+        )
     email = dados["email"].strip().lower()
     if Usuario.objects.filter(email__iexact=email).exists():
         raise ValidationError({"email": ["Já existe uma conta com este e-mail."]})
@@ -140,6 +150,13 @@ def criar_profissional_admin(dados: dict, request=None) -> Profissional:
 def atualizar_profissional_admin(
     profissional: Profissional, dados: dict, executante: Usuario, request=None
 ) -> Profissional:
+    if (
+        not executante.is_superuser
+        and profissional.usuario.instituicao_id != executante.instituicao_id
+    ):
+        raise PermissionDenied(
+            "Administradores institucionais só gerenciam profissionais da própria instituição."
+        )
     usuario = profissional.usuario
     if "ativo" in dados:
         usuario.is_active = dados["ativo"]

@@ -13,6 +13,11 @@ def is_administrador(user: Any) -> bool:
     )
 
 
+def is_admin_global(user: Any) -> bool:
+    """Administrador de plataforma: precisa ser superusuário (documentado)."""
+    return bool(user and user.is_authenticated and user.is_superuser)
+
+
 def is_profissional(user: Any) -> bool:
     return bool(
         user and user.is_authenticated and user.tipo_usuario == Usuario.TipoUsuario.PROFISSIONAL
@@ -33,7 +38,11 @@ def can_view_aluno(user: Any, aluno: Aluno) -> bool:
     if not user or not user.is_authenticated:
         return False
     if is_administrador(user):
-        return True
+        if is_admin_global(user):
+            return True
+        return bool(
+            user.instituicao_id is not None and aluno.usuario.instituicao_id == user.instituicao_id
+        )
     if is_aluno(user):
         return aluno.usuario_id == user.id
     if is_responsavel(user):
@@ -45,7 +54,11 @@ def can_view_aluno(user: Any, aluno: Aluno) -> bool:
 
 def can_manage_aluno(user: Any, aluno: Aluno) -> bool:
     if is_administrador(user):
-        return True
+        if is_admin_global(user):
+            return True
+        return bool(
+            user.instituicao_id is not None and aluno.usuario.instituicao_id == user.instituicao_id
+        )
     return bool(is_profissional(user) and aluno.usuario.instituicao_id == user.instituicao_id)
 
 

@@ -4,7 +4,7 @@ from django.db.models import Q
 
 from apps.atividades.models import Atividade
 from apps.usuarios.models import Usuario
-from common.permissions import is_administrador
+from common.permissions import is_admin_global, is_administrador
 
 
 def listar_catalogo(
@@ -20,7 +20,12 @@ def listar_catalogo(
         .prefetch_related("itens", "conteudos")
         .order_by("nivel_dificuldade", "titulo")
     )
-    if not is_administrador(usuario):
+    if is_administrador(usuario):
+        if not is_admin_global(usuario):
+            if usuario.instituicao_id is None:
+                return queryset.none()
+            queryset = queryset.filter(instituicao_id=usuario.instituicao_id)
+    else:
         if usuario.instituicao_id is None:
             return queryset.none()
         queryset = queryset.filter(instituicao_id=usuario.instituicao_id)

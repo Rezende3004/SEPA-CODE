@@ -56,11 +56,26 @@ def instituicao_b(db) -> Instituicao:
 
 @pytest.fixture
 def admin_user(instituicao_a) -> Usuario:
-    return criar_usuario(
+    usuario = criar_usuario(
         email="admin@teste.exemplo",
         nome="Administrador",
         tipo=Usuario.TipoUsuario.ADMINISTRADOR,
         instituicao=None,
+    )
+    usuario.is_staff = True
+    usuario.is_superuser = True
+    usuario.save(update_fields=["is_staff", "is_superuser"])
+    return usuario
+
+
+@pytest.fixture
+def admin_a(instituicao_a) -> Usuario:
+    """Administrador institucional (não global)."""
+    return criar_usuario(
+        email="admin.a@teste.exemplo",
+        nome="Administrador A",
+        tipo=Usuario.TipoUsuario.ADMINISTRADOR,
+        instituicao=instituicao_a,
     )
 
 

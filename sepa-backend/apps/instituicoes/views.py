@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from rest_framework import mixins, viewsets
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -33,6 +34,25 @@ class InstituicaoAdminViewSet(
 ):
     permission_classes = [IsAdministrador]
     queryset = Instituicao.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        if not getattr(user, "is_authenticated", False):
+            return Instituicao.objects.none()
+        if user.is_superuser:
+            return Instituicao.objects.all()
+        if user.instituicao_id is None:
+            return Instituicao.objects.none()
+        return Instituicao.objects.filter(pk=user.instituicao_id)
+
+    def get_object(self):
+        instituicao = Instituicao.objects.filter(pk=self.kwargs["pk"]).first()
+        if instituicao is None:
+            raise NotFound("Instituição não encontrada.")
+        user = self.request.user
+        if not user.is_superuser and instituicao.pk != user.instituicao_id:
+            raise PermissionDenied("Você não tem permissão para acessar este recurso.")
+        return instituicao
 
     def get_serializer_class(self):
         if self.action in {"update", "partial_update"}:

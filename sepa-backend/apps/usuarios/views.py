@@ -30,6 +30,7 @@ from common.permissions import (
     IsProfissionalOrAdmin,
     can_manage_aluno,
     can_view_aluno,
+    is_admin_global,
     is_administrador,
     is_profissional,
 )
@@ -114,7 +115,11 @@ class ResponsavelListView(ListAPIView):
         if not getattr(user, "is_authenticated", False):
             return queryset.none()
         if is_administrador(user):
-            return queryset
+            if is_admin_global(user):
+                return queryset
+            if user.instituicao_id is None:
+                return queryset.none()
+            return queryset.filter(usuario__instituicao_id=user.instituicao_id)
         return queryset.filter(usuario__instituicao_id=user.instituicao_id)
 
 
@@ -127,9 +132,13 @@ class UsuarioResumoView(RetrieveAPIView):
         if usuario is None:
             raise NotFound("Usuário não encontrado.")
         solicitante = self.request.user
-        if usuario.id != solicitante.id and (
-            solicitante.instituicao_id is None
-            or usuario.instituicao_id != solicitante.instituicao_id
+        if (
+            usuario.id != solicitante.id
+            and not is_admin_global(solicitante)
+            and (
+                solicitante.instituicao_id is None
+                or usuario.instituicao_id != solicitante.instituicao_id
+            )
         ):
             raise PermissionDenied("Você não tem permissão para acessar este recurso.")
         return usuario
@@ -150,9 +159,32 @@ class ProfissionalAdminViewSet(
     permission_classes = [IsAdministrador]
 
     def get_queryset(self):
-        return Profissional.objects.select_related("usuario", "usuario__instituicao").order_by(
+        queryset = Profissional.objects.select_related("usuario", "usuario__instituicao").order_by(
             "usuario__nome"
         )
+        user = self.request.user
+        if not getattr(user, "is_authenticated", False):
+            return queryset.none()
+        if user.is_superuser:
+            return queryset
+        if user.instituicao_id is None:
+            return queryset.none()
+        return queryset.filter(usuario__instituicao_id=user.instituicao_id)
+
+    def get_object(self):
+        profissional = (
+            Profissional.objects.select_related("usuario", "usuario__instituicao")
+            .filter(pk=self.kwargs["pk"])
+            .first()
+        )
+        if profissional is None:
+            raise NotFound("Profissional não encontrado.")
+        if (
+            not self.request.user.is_superuser
+            and profissional.usuario.instituicao_id != self.request.user.instituicao_id
+        ):
+            raise PermissionDenied("Você não tem permissão para acessar este recurso.")
+        return profissional
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -166,6 +198,7 @@ class ProfissionalAdminViewSet(
         serializer.is_valid(raise_exception=True)
         profissional = criar_profissional_admin(
             serializer.validated_data,
+            executante=request.user,
             request=request,
         )
         return Response(
