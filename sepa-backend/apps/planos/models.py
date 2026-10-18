@@ -44,8 +44,13 @@ class PlanoDeAtendimento(models.Model):
 
 
 class Contem(models.Model):
-    plano = models.ForeignKey(PlanoDeAtendimento, on_delete=models.CASCADE)
+    plano = models.ForeignKey(
+        PlanoDeAtendimento,
+        on_delete=models.CASCADE,
+        related_name="entradas",
+    )
     atividade = models.ForeignKey(Atividade, on_delete=models.PROTECT)
+    nivel_atribuido = models.PositiveSmallIntegerField("nível atribuído")
 
     class Meta:
         verbose_name = "atividade do plano"
@@ -54,9 +59,18 @@ class Contem(models.Model):
             models.UniqueConstraint(
                 fields=["plano", "atividade"],
                 name="contem_plano_atividade_unico",
-            )
+            ),
+            models.CheckConstraint(
+                condition=models.Q(nivel_atribuido__gte=1) & models.Q(nivel_atribuido__lte=5),
+                name="contem_nivel_atribuido_1_a_5",
+            ),
         ]
         indexes = [models.Index(fields=["plano", "atividade"])]
 
+    def save(self, *args, **kwargs):
+        if self.nivel_atribuido is None and self.atividade_id:
+            self.nivel_atribuido = self.atividade.nivel_dificuldade
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
-        return f"{self.plano_id} → {self.atividade_id}"
+        return f"{self.plano_id} → {self.atividade_id} (nível {self.nivel_atribuido})"

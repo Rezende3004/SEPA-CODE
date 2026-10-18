@@ -92,7 +92,10 @@ export function AtividadeSequencia({ atividade, alunoId, aoConcluir }: MotorProp
         </h2>
 
         <div className="mt-3 flex justify-center">
-          <NivelDificuldade nivel={atividade.nivelDificuldade} tom="crianca" />
+          <NivelDificuldade
+            nivel={atividade.nivelAtribuido ?? atividade.nivelDificuldade}
+            tom="crianca"
+          />
         </div>
 
         <div className="mt-4 rounded-xl border border-dashed border-kid-primary/30 bg-kid-soft/60 p-3">

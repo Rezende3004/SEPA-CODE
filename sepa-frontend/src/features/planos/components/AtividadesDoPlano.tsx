@@ -56,7 +56,7 @@ export function AtividadesDoPlano({ plano }: AtividadesDoPlanoProps) {
                 {rotuloTipoAtividade[atividade.tipoAtividade]} · {atividade.itens.length} etapas
               </p>
             </div>
-            <NivelDificuldade nivel={atividade.nivelDificuldade} />
+            <NivelDificuldade nivel={atividade.nivelAtribuido ?? atividade.nivelDificuldade} />
             <Button
               variante="fantasma"
               tamanho="pequeno"

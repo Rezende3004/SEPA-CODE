@@ -39,6 +39,24 @@ def test_detalhe_do_plano_traz_atividades_e_nomes(prof_a, plano_a, autenticar):
     assert len(corpo["atividades"]) == 2
     assert "itens" in corpo["atividades"][0]
     assert "conteudoIds" in corpo["atividades"][0]
+    assert corpo["atividades"][0]["nivelAtribuido"] >= 1
+
+
+def test_nivel_atribuido_do_plano_nao_altera_catalogo(prof_a, plano_a, atividade_a, autenticar):
+    from apps.planos.models import Contem
+
+    entrada = Contem.objects.get(plano=plano_a, atividade=atividade_a)
+    entrada.nivel_atribuido = 4
+    entrada.save(update_fields=["nivel_atribuido"])
+
+    client = autenticar(prof_a.usuario)
+    plano = client.get(f"/api/planos/{plano_a.pk}/").json()
+    atividade_no_plano = next(item for item in plano["atividades"] if item["id"] == atividade_a.pk)
+    assert atividade_no_plano["nivelAtribuido"] == 4
+    assert atividade_no_plano["nivelDificuldade"] == 4
+
+    atividade_a.refresh_from_db()
+    assert atividade_a.nivel_dificuldade == 1
 
 
 def test_criar_plano(prof_a, aluno_a, autenticar):

@@ -79,8 +79,14 @@ export const recomendacoesHandlers = [
 
     const nivel = Math.min(5, Math.max(1, recomendacao.nivelSugerido));
     recomendacao.atividadeIds.forEach((atividadeId) => {
-      const atividade = buscarAtividade(atividadeId);
-      if (atividade) atividade.nivelDificuldade = nivel;
+      db.planos
+        .filter((plano) => plano.alunoId === recomendacao.alunoId)
+        .forEach((plano) => {
+          const chave = `${plano.id}:${atividadeId}`;
+          if (chave in db.niveisAtribuidos) {
+            db.niveisAtribuidos[chave] = nivel;
+          }
+        });
     });
     recomendacao.status = 'ACEITA';
     recomendacao.nivelAtual = nivel;

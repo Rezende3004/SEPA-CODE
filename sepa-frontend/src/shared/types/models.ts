@@ -99,6 +99,8 @@ export interface Atividade {
   titulo: string;
   descricao: string;
   nivelDificuldade: number;
+  /** Nível efetivo quando a atividade vem de um plano (Contem.nivel_atribuido). */
+  nivelAtribuido?: number;
   tipoAtividade: TipoAtividade;
   instituicaoId: number;
   conteudoIds: number[];
@@ -108,6 +110,7 @@ export interface Atividade {
 export interface AtividadeAtribuida extends Atividade {
   planoId: number;
   planoNome: string;
+  nivelAtribuido: number;
   totalExecucoes: number;
   ultimaExecucao: string | null;
 }

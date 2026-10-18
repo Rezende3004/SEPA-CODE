@@ -54,8 +54,12 @@ export const atividadesHandlers = [
               registro.alunoId === sessao.usuarioId && registro.atividadeId === atividadeId,
           )
           .sort((a, b) => a.dataHora.localeCompare(b.dataHora));
+        const nivel =
+          db.niveisAtribuidos[`${plano.id}:${atividadeId}`] ?? atividade.nivelDificuldade;
         atribuidas.push({
           ...atividade,
+          nivelAtribuido: nivel,
+          nivelDificuldade: nivel,
           planoId: plano.id,
           planoNome: plano.nomePlano,
           totalExecucoes: execucoes.length,

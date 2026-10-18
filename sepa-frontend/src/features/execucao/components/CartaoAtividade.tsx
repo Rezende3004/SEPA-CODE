@@ -27,7 +27,10 @@ export function CartaoAtividade({ atividade }: CartaoAtividadeProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <NivelDificuldade nivel={atividade.nivelDificuldade} tom="crianca" />
+        <NivelDificuldade
+          nivel={atividade.nivelAtribuido ?? atividade.nivelDificuldade}
+          tom="crianca"
+        />
         <span className="rounded-full bg-kid-soft px-2.5 py-1 text-xs font-semibold text-kid-primary">
           {rotuloTipoAtividade[atividade.tipoAtividade]}
         </span>

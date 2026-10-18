@@ -110,7 +110,10 @@ export function AtividadeAssociacao({ atividade, alunoId, aoConcluir }: MotorPro
           </span>
           <span className="sr-only">{rodada.item.dica}</span>
           <div className="mt-2">
-            <NivelDificuldade nivel={atividade.nivelDificuldade} tom="crianca" />
+            <NivelDificuldade
+              nivel={atividade.nivelAtribuido ?? atividade.nivelDificuldade}
+              tom="crianca"
+            />
           </div>
         </div>
 

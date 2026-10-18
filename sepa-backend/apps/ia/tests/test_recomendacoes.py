@@ -5,6 +5,7 @@ import pytest
 from apps.ia.features import FEATURES, extrair_features
 from apps.ia.services import analisar_aluno, explicar
 from apps.ia.training import treinar_modelo
+from apps.planos.models import Contem
 from apps.usuarios.models import Aluno
 
 
@@ -41,15 +42,22 @@ def test_lista_de_recomendacoes_por_instituicao(
 
 
 @pytest.mark.django_db
-def test_aceitar_so_apos_decisao_e_aplicar_nivel(prof_a, atividade_a, recomendacao_a, autenticar):
-    niveis_antes = atividade_a.nivel_dificuldade
+def test_aceitar_so_apos_decisao_e_aplicar_nivel_nos_planos(
+    prof_a, atividade_a, plano_a, recomendacao_a, autenticar
+):
+    nivel_catalogo_antes = atividade_a.nivel_dificuldade
+    entrada = Contem.objects.get(plano=plano_a, atividade=atividade_a)
+    assert entrada.nivel_atribuido == nivel_catalogo_antes
+
     resposta = autenticar(prof_a.usuario).post(f"/api/recomendacoes/{recomendacao_a.pk}/aceitar/")
     assert resposta.status_code == 200
     assert resposta.json()["status"] == "ACEITA"
     assert resposta.json()["nivelSugerido"] == 2
+
     atividade_a.refresh_from_db()
-    assert atividade_a.nivel_dificuldade == 2
-    assert niveis_antes == 1
+    entrada.refresh_from_db()
+    assert atividade_a.nivel_dificuldade == nivel_catalogo_antes
+    assert entrada.nivel_atribuido == 2
 
     repetida = autenticar(prof_a.usuario).post(f"/api/recomendacoes/{recomendacao_a.pk}/aceitar/")
     assert repetida.status_code == 409

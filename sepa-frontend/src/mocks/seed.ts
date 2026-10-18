@@ -793,6 +793,15 @@ export function criarBanco(): Banco {
   const historico = criarHistorico(planos, atividades);
   const analises = criarAnalises(historico, alunos);
   const recomendacoes = criarRecomendacoes(analises);
+  const niveisAtribuidos: Record<string, number> = {};
+  planos.forEach((plano) => {
+    plano.atividadeIds.forEach((atividadeId) => {
+      const atividade = atividades.find((item) => item.id === atividadeId);
+      if (atividade) {
+        niveisAtribuidos[`${plano.id}:${atividadeId}`] = atividade.nivelDificuldade;
+      }
+    });
+  });
 
   const usuarios: Usuario[] = [admin, ...profissionais, ...responsaveis, ...alunos];
 
@@ -813,6 +822,7 @@ export function criarBanco(): Banco {
     atividades,
     conteudos,
     planos,
+    niveisAtribuidos,
     historico,
     relatorios: [],
     analises,

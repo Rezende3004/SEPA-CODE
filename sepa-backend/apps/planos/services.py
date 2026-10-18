@@ -5,7 +5,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from apps.atividades.models import Atividade
 from apps.instituicoes.models import Instituicao
-from apps.planos.models import PlanoDeAtendimento
+from apps.planos.models import Contem, PlanoDeAtendimento
 from apps.usuarios.models import Aluno, Usuario
 from common.permissions import can_manage_plano, is_profissional
 from common.services import registrar_auditoria
@@ -89,7 +89,13 @@ def associar_atividade(
     if atividade.instituicao_id != plano.aluno.usuario.instituicao_id:
         raise PermissionDenied("A atividade pertence a outra instituição (RN-003).")
 
-    plano.atividades.add(atividade)
+    Contem.objects.get_or_create(
+        plano=plano,
+        atividade=atividade,
+        defaults={"nivel_atribuido": atividade.nivel_dificuldade},
+    )
+    if hasattr(plano, "_prefetched_objects_cache"):
+        plano._prefetched_objects_cache.pop("entradas", None)
     registrar_auditoria(
         usuario=executante,
         acao="associar_atividade",

@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.atividades.models import Atividade
-from apps.planos.models import PlanoDeAtendimento
+from apps.planos.models import Contem, PlanoDeAtendimento
 from apps.planos.serializers import (
     AssociarAtividadeSerializer,
     PlanoSerializer,
@@ -62,8 +62,10 @@ class PlanoViewSet(
             )
             .prefetch_related(
                 Prefetch(
-                    "atividades",
-                    queryset=Atividade.objects.prefetch_related("itens", "conteudos"),
+                    "entradas",
+                    queryset=Contem.objects.select_related("atividade").prefetch_related(
+                        "atividade__itens", "atividade__conteudos"
+                    ),
                 )
             )
             .order_by("-data_inicio", "-id")
@@ -79,8 +81,10 @@ class PlanoViewSet(
             )
             .prefetch_related(
                 Prefetch(
-                    "atividades",
-                    queryset=Atividade.objects.prefetch_related("itens", "conteudos"),
+                    "entradas",
+                    queryset=Contem.objects.select_related("atividade").prefetch_related(
+                        "atividade__itens", "atividade__conteudos"
+                    ),
                 )
             )
             .filter(pk=self.kwargs["pk"])

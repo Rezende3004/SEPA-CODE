@@ -114,7 +114,10 @@ export function ExecutarAtividadePage() {
               <span className="text-xs font-semibold text-kid-muted">
                 {rotuloTipoAtividade[atividade.tipoAtividade]}
               </span>
-              <NivelDificuldade nivel={atividade.nivelDificuldade} tom="crianca" />
+              <NivelDificuldade
+                nivel={atividade.nivelAtribuido ?? atividade.nivelDificuldade}
+                tom="crianca"
+              />
             </div>
           </div>
 

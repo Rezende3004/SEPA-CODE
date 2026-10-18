@@ -30,7 +30,14 @@ describe('aceite de recomendação da IA (RF-009 e RN-004)', () => {
     renderizarComProviders(<RecomendacoesPage />, { usuario: sessaoAna() });
 
     const cartao = await screen.findByRole('article', { name: /Helena Costa/ });
-    expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).not.toBe(nivelEsperado);
+    expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).toBe(3);
+    const planosHelena = db.planos.filter((item) => item.alunoId === 12);
+    const chaves = planosHelena.flatMap((plano) =>
+      [6, 9].map((atividadeId) => `${plano.id}:${atividadeId}`),
+    );
+    chaves.forEach((chave) =>
+      expect(db.niveisAtribuidos[chave]).toBe(chave.endsWith(':6') ? 3 : 1),
+    );
 
     await usuario.click(within(cartao).getByRole('button', { name: 'Aceitar recomendação' }));
     await usuario.click(await screen.findByRole('button', { name: 'Aplicar sugestão' }));
@@ -42,7 +49,9 @@ describe('aceite de recomendação da IA (RF-009 e RN-004)', () => {
         'ACEITA',
       );
     });
-    expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).toBe(nivelEsperado);
-    expect(db.atividades.find((item) => item.id === 9)?.nivelDificuldade).toBe(nivelEsperado);
+    // O catálogo não é alterado; apenas o nível atribuído nos planos de Helena.
+    expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).toBe(3);
+    expect(db.atividades.find((item) => item.id === 9)?.nivelDificuldade).toBe(1);
+    chaves.forEach((chave) => expect(db.niveisAtribuidos[chave]).toBe(nivelEsperado));
   });
 });

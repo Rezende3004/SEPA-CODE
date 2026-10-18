@@ -18,7 +18,12 @@ import { podeGerenciarPlano, podeVerAluno } from '../lib/rules';
 
 export function enriquecerPlano(plano: PlanoDeAtendimento): PlanoDetalhado {
   const atividades = plano.atividadeIds
-    .map((id) => buscarAtividade(id))
+    .map((id) => {
+      const atividade = buscarAtividade(id);
+      if (!atividade) return undefined;
+      const nivel = db.niveisAtribuidos[`${plano.id}:${id}`] ?? atividade.nivelDificuldade;
+      return { ...atividade, nivelAtribuido: nivel, nivelDificuldade: nivel };
+    })
     .filter((atividade): atividade is NonNullable<typeof atividade> => Boolean(atividade));
   return {
     ...plano,

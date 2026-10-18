@@ -110,8 +110,12 @@ describe('RN-004 — a IA nunca altera o plano sozinha', () => {
     });
     expect(resposta.status).toBe(200);
     expect(db.recomendacoes.find((item) => item.id === recomendacaoId)?.status).toBe('ACEITA');
-    expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).toBe(2);
-    expect(db.atividades.find((item) => item.id === 9)?.nivelDificuldade).toBe(2);
+    expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).toBe(3);
+    expect(db.atividades.find((item) => item.id === 9)?.nivelDificuldade).toBe(1);
+    expect(db.niveisAtribuidos['2:6']).toBe(2);
+    expect(db.niveisAtribuidos['2:9']).toBe(2);
+    // Atividade 9 também está no plano da Sofia; o nível dela não pode mudar.
+    expect(db.niveisAtribuidos['4:9']).toBe(1);
 
     const repetida = await requisicao(ANA, `/recomendacoes/${recomendacaoId}/aceitar/`, {
       method: 'POST',

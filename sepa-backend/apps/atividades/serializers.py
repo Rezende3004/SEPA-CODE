@@ -36,6 +36,8 @@ class AtividadeAtribuidaSerializer(AtividadeSerializer):
     plano_nome = serializers.SerializerMethodField()
     total_execucoes = serializers.SerializerMethodField()
     ultima_execucao = serializers.SerializerMethodField()
+    nivel_atribuido = serializers.SerializerMethodField()
+    nivel_dificuldade = serializers.SerializerMethodField()
 
     class Meta(AtividadeSerializer.Meta):
         fields = AtividadeSerializer.Meta.fields + (
@@ -43,7 +45,14 @@ class AtividadeAtribuidaSerializer(AtividadeSerializer):
             "plano_nome",
             "total_execucoes",
             "ultima_execucao",
+            "nivel_atribuido",
         )
+
+    def get_nivel_atribuido(self, obj: Atividade) -> int:
+        return getattr(obj, "nivel_atribuido_atribuido", obj.nivel_dificuldade)
+
+    def get_nivel_dificuldade(self, obj: Atividade) -> int:
+        return self.get_nivel_atribuido(obj)
 
     def get_plano_id(self, obj: Atividade) -> int:
         return obj.plano_id_atribuido

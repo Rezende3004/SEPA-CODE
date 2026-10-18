@@ -47,3 +47,23 @@ def test_atividade_traz_itens_e_conteudos(prof_a, instituicao_a, autenticar):
     item = autenticar(prof_a.usuario).get("/api/atividades/").json()[0]
     assert item["itens"][0]["rotulo"] == "Cachorro"
     assert len(item["conteudoIds"]) == 1
+
+
+@pytest.mark.django_db
+def test_aluno_recebe_nivel_atribuido_do_plano(aluno_a, plano_a, atividade_a, autenticar):
+    from apps.planos.models import Contem
+
+    client = autenticar(aluno_a.usuario)
+    atividade = client.get("/api/aluno/atividades/").json()[0]
+    assert atividade["nivelAtribuido"] == 1
+    assert atividade["nivelDificuldade"] == 1
+
+    entrada = Contem.objects.get(plano=plano_a, atividade=atividade_a)
+    entrada.nivel_atribuido = 4
+    entrada.save(update_fields=["nivel_atribuido"])
+
+    atualizada = client.get("/api/aluno/atividades/").json()[0]
+    assert atualizada["nivelAtribuido"] == 4
+    assert atualizada["nivelDificuldade"] == 4
+    atividade_a.refresh_from_db()
+    assert atividade_a.nivel_dificuldade == 1

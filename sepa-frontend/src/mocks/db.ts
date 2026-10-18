@@ -24,6 +24,7 @@ export interface Banco {
   atividades: Atividade[];
   conteudos: ConteudoMultimidia[];
   planos: PlanoDeAtendimento[];
+  niveisAtribuidos: Record<string, number>;
   historico: HistoricoAtividade[];
   relatorios: Relatorio[];
   analises: AnaliseAprendizado[];

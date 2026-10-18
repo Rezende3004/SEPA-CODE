@@ -19,6 +19,7 @@ from apps.ia.features import (
 )
 from apps.ia.models import AnaliseAprendizado, RecomendacaoIA
 from apps.ia.training import carregar_modelo
+from apps.planos.models import Contem
 from apps.relatorios.statistics import classificar_tendencia, media, round_1, round_2
 from apps.usuarios.models import Aluno, Usuario
 from common.exceptions import Conflict
@@ -148,7 +149,13 @@ def analisar_aluno(
     classe, modelo = prever_classe(features)
     delta = DELTA_POR_CLASSE.get(classe, 0)
     atividades = _atividades_do_aluno(aluno)
-    nivel_atual = max((atividade.nivel_dificuldade for atividade in atividades), default=1)
+    niveis_atribuidos = list(
+        Contem.objects.filter(
+            plano__aluno=aluno,
+            atividade_id__in=[atividade.id for atividade in atividades],
+        ).values_list("nivel_atribuido", flat=True)
+    )
+    nivel_atual = max(niveis_atribuidos, default=1)
     nivel_sugerido = max(1, min(5, nivel_atual + delta))
     tendencia = classificar_tendencia(features["slope"])
     pontuacao = round_1(media([float(h.resultado) for h in historicos]))
@@ -198,9 +205,13 @@ def aceitar_recomendacao(
     if recomendacao.status != RecomendacaoIA.Status.PENDENTE:
         raise Conflict("Esta recomendação já foi decidida.")
     nivel = max(1, min(5, recomendacao.nivel_sugerido))
-    for atividade in recomendacao.atividades.all():
-        atividade.nivel_dificuldade = nivel
-        atividade.save(update_fields=["nivel_dificuldade", "atualizado_em"])
+    # O catálogo permanece intacto: o nível é atribuído apenas às atividades
+    # dos planos do aluno desta recomendação.
+    atividade_ids = list(recomendacao.atividades.values_list("id", flat=True))
+    Contem.objects.filter(
+        plano__aluno=recomendacao.analise.aluno,
+        atividade_id__in=atividade_ids,
+    ).update(nivel_atribuido=nivel)
     recomendacao.status = RecomendacaoIA.Status.ACEITA
     recomendacao.nivel_atual = nivel
     recomendacao.decidido_por = executante

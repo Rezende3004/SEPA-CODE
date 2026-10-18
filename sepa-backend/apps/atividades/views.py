@@ -11,6 +11,7 @@ from apps.atividades.models import Atividade
 from apps.atividades.serializers import AtividadeAtribuidaSerializer, AtividadeSerializer
 from apps.atividades.services import listar_catalogo
 from apps.execucao.models import HistoricoAtividade
+from apps.planos.models import Contem
 from apps.usuarios.models import Aluno
 from common.mixins import InstituicaoScopedQuerysetMixin
 from common.permissions import IsAluno
@@ -50,10 +51,11 @@ class AlunoAtividadesView(APIView):
         if aluno is None:
             return Response({"detail": "Aluno não encontrado."}, status=404)
 
-        planos = (
-            aluno.planos.select_related("profissional__usuario")
-            .prefetch_related("atividades__itens", "atividades__conteudos")
-            .order_by("data_inicio", "id")
+        entradas = (
+            Contem.objects.filter(plano__aluno=aluno)
+            .select_related("plano", "atividade")
+            .prefetch_related("atividade__itens", "atividade__conteudos")
+            .order_by("plano__data_inicio", "plano_id", "id")
         )
         execucoes = {
             linha["atividade_id"]: linha
@@ -64,17 +66,18 @@ class AlunoAtividadesView(APIView):
 
         vistas: set[int] = set()
         atribuidas: list[Atividade] = []
-        for plano in planos:
-            for atividade in plano.atividades.all():
-                if atividade.id in vistas:
-                    continue
-                vistas.add(atividade.id)
-                atividade.plano_id_atribuido = plano.id  # type: ignore[attr-defined]
-                atividade.plano_nome_atribuido = plano.nome_plano  # type: ignore[attr-defined]
-                resumo = execucoes.get(atividade.id)
-                atividade.total_execucoes_atribuido = resumo["total"] if resumo else 0  # type: ignore[attr-defined]
-                atividade.ultima_execucao_atribuida = resumo["ultima"] if resumo else None  # type: ignore[attr-defined]
-                atribuidas.append(atividade)
+        for entrada in entradas:
+            atividade = entrada.atividade
+            if atividade.id in vistas:
+                continue
+            vistas.add(atividade.id)
+            atividade.plano_id_atribuido = entrada.plano_id  # type: ignore[attr-defined]
+            atividade.plano_nome_atribuido = entrada.plano.nome_plano  # type: ignore[attr-defined]
+            atividade.nivel_atribuido_atribuido = entrada.nivel_atribuido  # type: ignore[attr-defined]
+            resumo = execucoes.get(atividade.id)
+            atividade.total_execucoes_atribuido = resumo["total"] if resumo else 0  # type: ignore[attr-defined]
+            atividade.ultima_execucao_atribuida = resumo["ultima"] if resumo else None  # type: ignore[attr-defined]
+            atribuidas.append(atividade)
 
         return Response(
             AtividadeAtribuidaSerializer(
