@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+staticfiles/
+media/
+schema.yaml
+ml/*.joblib
+ml/*.json
+!.gitkeep

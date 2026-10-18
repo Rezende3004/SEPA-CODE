@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: sepa
+          POSTGRES_USER: sepa
+          POSTGRES_PASSWORD: sepa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sepa -d sepa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgres://sepa:sepa@localhost:5432/sepa
+      SECRET_KEY: ci-secret-key-not-used-in-production
+      DJANGO_SETTINGS_MODULE: config.settings.test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format
+        run: ruff format --check .
+      - name: Migrations em dia
+        run: python manage.py makemigrations --check --dry-run
+      - name: Testes com cobertura
+        run: pytest --cov --cov-report=term-missing --cov-fail-under=80
+      - name: Auditoria de dependências
+        run: pip-audit -r requirements.txt
+      - name: Check de deploy
+        if: env.DATABASE_URL != ''
+        run: |
+          SECURE_SSL_REDIRECT=true ALLOWED_HOSTS=localhost \
+          CSRF_TRUSTED_ORIGINS=http://localhost \
+          python manage.py check --deploy --settings=config.settings.prod
