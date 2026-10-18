@@ -5,12 +5,31 @@ import '@/shared/styles/globals.css';
 import App from '@/app/App';
 
 async function iniciarMocks(): Promise<void> {
-  if (import.meta.env.VITE_USE_MOCKS === 'false') return;
+  if (import.meta.env.VITE_USE_MOCKS === 'false') {
+    await removerServiceWorkerDeMocks();
+    return;
+  }
   const { worker } = await import('@/mocks/browser');
   await worker.start({
     onUnhandledRequest: 'bypass',
     serviceWorker: { url: '/mockServiceWorker.js' },
   });
+}
+
+async function removerServiceWorkerDeMocks(): Promise<void> {
+  if (!import.meta.env.DEV || !('serviceWorker' in navigator)) return;
+  const registros = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(
+    registros
+      .filter((registro) => {
+        const url =
+          registro.active?.scriptURL ??
+          registro.waiting?.scriptURL ??
+          registro.installing?.scriptURL;
+        return url?.endsWith('/mockServiceWorker.js') ?? false;
+      })
+      .map((registro) => registro.unregister()),
+  );
 }
 
 async function iniciarAplicacao(): Promise<void> {
