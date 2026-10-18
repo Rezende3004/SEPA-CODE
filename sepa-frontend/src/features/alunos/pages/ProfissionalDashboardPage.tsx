@@ -52,7 +52,7 @@ export function ProfissionalDashboardPage() {
       rotulo: 'Planos ativos',
       valor: `${(planos.data ?? []).length}`,
       icone: ClipboardList,
-      tom: 'primario',
+      tom: 'secundario',
     },
     {
       rotulo: 'Recomendações pendentes',
@@ -113,9 +113,11 @@ export function ProfissionalDashboardPage() {
                       className={
                         tom === 'atencao'
                           ? 'flex size-11 items-center justify-center rounded-lg bg-warning-soft text-warning'
-                          : tom === 'sucesso'
-                            ? 'flex size-11 items-center justify-center rounded-lg bg-success-soft text-success'
-                            : 'flex size-11 items-center justify-center rounded-lg bg-primary-soft text-primary'
+                          : tom === 'secundario'
+                            ? 'flex size-11 items-center justify-center rounded-lg bg-secondary-soft text-secondary-dark'
+                            : tom === 'sucesso'
+                              ? 'flex size-11 items-center justify-center rounded-lg bg-success-soft text-success'
+                              : 'flex size-11 items-center justify-center rounded-lg bg-primary-soft text-primary'
                       }
                     >
                       <Icone aria-hidden="true" className="size-5" />

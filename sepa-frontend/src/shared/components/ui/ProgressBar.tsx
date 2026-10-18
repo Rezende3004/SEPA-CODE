@@ -10,7 +10,7 @@ interface ProgressBarProps {
 
 const tons = {
   primario: 'bg-primary',
-  crianca: 'bg-kid-primary',
+  crianca: 'bg-secondary',
   sucesso: 'bg-success',
   atencao: 'bg-warning',
 };

@@ -38,6 +38,16 @@ Todos atendem WCAG AA para texto normal.
 O amarelo é usado como cor de apoio (barras, estrelas, badges e fundos suaves); para texto sobre
 branco usa-se o `warning`/`accent.dark`, que é um amarelo escuro com contraste suficiente.
 
+### Presença das quatro cores na interface
+
+- Faixa de identidade no topo de todos os layouts: azul, laranja, amarelo e branco.
+- Título de página com sublinhado amarelo.
+- Botão principal do aluno em amarelo com texto azul escuro.
+- Indicador ativo da navegação com borda laranja.
+- Níveis de dificuldade e barras de progresso em laranja; estagnação em amarelo.
+- Ações destrutivas e alertas de erro em laranja escuro.
+- Fundo e cartões em branco, separados por borda azul clara e sombra suave.
+
 ## Tipografia
 
 - Família: pilha de sistema (`system-ui`, Segoe UI, Roboto, Arial). Sem download externo,

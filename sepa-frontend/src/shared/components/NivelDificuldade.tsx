@@ -27,7 +27,7 @@ export function NivelDificuldade({
             aria-hidden="true"
             className={cn(
               'size-2 rounded-full',
-              indice < nivel ? (tom === 'crianca' ? 'bg-kid-primary' : 'bg-primary') : 'bg-line',
+              indice < nivel ? (tom === 'crianca' ? 'bg-accent' : 'bg-secondary') : 'bg-line',
             )}
           />
         ))}

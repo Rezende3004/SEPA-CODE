@@ -46,7 +46,7 @@ export function CartaoAtividade({ atividade }: CartaoAtividadeProps) {
 
       <Link
         to={rotas.aluno.atividade(atividade.id)}
-        className="sepa-kid-focus mt-auto inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-kid-primary px-5 text-lg font-semibold text-white hover:bg-kid-primary/90"
+        className="sepa-kid-focus mt-auto inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-lg font-semibold text-ink hover:bg-accent/90"
       >
         <Play aria-hidden="true" className="size-5 fill-current" />
         Começar

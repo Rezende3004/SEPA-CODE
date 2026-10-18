@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, X } from 'lucide-react';
 import { Avatar } from '@/shared/components/ui/Avatar';
 import { Button } from '@/shared/components/ui/Button';
+import { FaixaCores } from '@/shared/components/FaixaCores';
 import { useAuth } from '@/features/auth/use-auth';
 import { navegacaoPorPerfil, rotuloPerfil } from '@/app/navigation';
 import { rotas } from '@/app/router/paths';
@@ -29,6 +30,7 @@ export function DashboardLayout() {
 
   const navegacao = (
     <>
+      <FaixaCores />
       <div className="border-b border-line px-5 py-4">
         <Brand compacto />
         <p className="mt-3 truncate text-xs font-medium text-muted">
@@ -46,10 +48,10 @@ export function DashboardLayout() {
               onClick={() => setMenuAberto(false)}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'flex min-h-11 items-center gap-3 rounded-lg border-l-4 px-3 py-2 text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-primary-soft text-primary-dark'
-                    : 'text-muted hover:bg-canvas hover:text-ink',
+                    ? 'border-secondary bg-primary-soft text-primary-dark'
+                    : 'border-transparent text-muted hover:bg-canvas hover:text-ink',
                 )
               }
             >
@@ -129,6 +131,7 @@ export function DashboardLayout() {
 
       <div className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
+          <FaixaCores />
           <div className="flex min-h-16 items-center gap-3 px-4 sm:px-6">
             <button
               type="button"

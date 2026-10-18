@@ -20,6 +20,7 @@ export function PageHeader({ titulo, descricao, acoes, voltar, sobretitulo }: Pa
             </p>
           ) : null}
           <h1 className="text-balance text-2xl font-bold text-ink sm:text-3xl">{titulo}</h1>
+          <span aria-hidden="true" className="block h-1.5 w-16 rounded-full bg-accent" />
           {descricao ? <p className="max-w-3xl text-sm text-muted">{descricao}</p> : null}
         </div>
         {acoes ? <div className="flex flex-wrap items-center gap-2">{acoes}</div> : null}

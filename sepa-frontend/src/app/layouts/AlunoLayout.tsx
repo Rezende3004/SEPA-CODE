@@ -4,6 +4,7 @@ import { Home, LogOut, SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '@/features/auth/use-auth';
 import { rotas } from '@/app/router/paths';
 import { useReducedMotion } from '@/shared/hooks/useReducedMotion';
+import { FaixaCores } from '@/shared/components/FaixaCores';
 import { useSensoryPreferences } from '@/features/execucao/hooks/use-sensory-preferences';
 import { cn } from '@/shared/lib/cn';
 
@@ -51,6 +52,7 @@ export function AlunoLayout() {
       </a>
 
       <header className="border-b border-kid-primary/15 bg-white">
+        <FaixaCores />
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 py-3">
           <NavLink
             to={rotas.aluno.raiz}
