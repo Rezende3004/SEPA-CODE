@@ -50,6 +50,10 @@ export interface Profissional extends Usuario {
   registroProfissional: string;
 }
 
+export interface ProfissionalAdmin extends Profissional {
+  instituicaoNome: string;
+}
+
 export interface Responsavel extends Usuario {
   tipoUsuario: 'RESPONSAVEL';
   telefone: string;
@@ -194,10 +198,22 @@ export interface Mensagem {
   lida: boolean;
 }
 
+export interface MensagemDetalhada extends Mensagem {
+  remetenteNome: string;
+  destinatarioNome: string;
+}
+
+export interface UsuarioResumo {
+  id: number;
+  nome: string;
+  tipoUsuario: TipoUsuario;
+  instituicaoId: number | null;
+}
+
 export interface ConversaResumo {
   usuarioId: number;
   nome: string;
-  tipoUsuario: TipoUsuario;
+  tipoUsuario?: TipoUsuario;
   ultimaMensagem: string;
   dataEnvio: string;
   naoLidas: number;

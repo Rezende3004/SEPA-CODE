@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarDays, ClipboardList, LineChart, Mail, Plus, UserRound } from 'lucide-react';
+import { ArrowLeft, CalendarDays, ClipboardList, LineChart, Mail, MessageSquare, Plus, UserRound } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { Button } from '@/shared/components/ui/Button';
 import { Card, CardContent } from '@/shared/components/ui/Card';
@@ -53,6 +53,13 @@ export function AlunoDetailPage() {
         descricao={dados.observacoes || 'Sem observações registradas.'}
         acoes={
           <>
+            <Link
+              to={rotas.profissional.conversa(dados.responsavelId)}
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-primary hover:bg-primary-soft"
+            >
+              <MessageSquare aria-hidden="true" className="size-4" />
+              Mensagem ao responsável
+            </Link>
             <Link
               to={rotas.profissional.relatorio(dados.id)}
               className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-primary/30 bg-white px-3 text-sm font-semibold text-primary-dark hover:bg-primary-soft"

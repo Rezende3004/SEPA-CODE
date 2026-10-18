@@ -16,12 +16,15 @@ import { RelatorioAlunoPage } from '@/features/relatorios/pages/RelatorioAlunoPa
 import { ResponsavelHomePage } from '@/features/responsavel/pages/ResponsavelHomePage';
 import { FilhoDetailPage } from '@/features/responsavel/pages/FilhoDetailPage';
 import { RecomendacoesPage } from '@/features/recomendacoes/pages/RecomendacoesPage';
+import { MensagensPage } from '@/features/mensagens/pages/MensagensPage';
+import { AdminHomePage } from '@/features/admin/pages/AdminHomePage';
+import { InstituicoesPage } from '@/features/admin/pages/InstituicoesPage';
+import { ProfissionaisPage } from '@/features/admin/pages/ProfissionaisPage';
 import { DashboardLayout } from '@/app/layouts/DashboardLayout';
 import { PublicLayout } from '@/app/layouts/PublicLayout';
 import { ForbiddenPage } from '@/app/pages/ForbiddenPage';
 import { HomeRedirect } from '@/app/pages/HomeRedirect';
 import { NotFoundPage } from '@/app/pages/NotFoundPage';
-import { PainelPlaceholder } from '@/app/pages/PainelPlaceholder';
 import { destinoPorPerfil, rotas } from './paths';
 import { RequireAuth } from './RequireAuth';
 import { RequireRole } from './RequireRole';
@@ -62,6 +65,14 @@ export function AppRouter() {
             <Route path={rotas.profissional.relatorios} element={<RelatoriosPage />} />
             <Route path="/profissional/relatorios/:alunoId" element={<RelatorioAlunoPage />} />
             <Route path={rotas.profissional.recomendacoes} element={<RecomendacoesPage />} />
+            <Route
+              path={rotas.profissional.mensagens}
+              element={<MensagensPage basePath={rotas.profissional.mensagens} />}
+            />
+            <Route
+              path="/profissional/mensagens/:usuarioId"
+              element={<MensagensPage basePath={rotas.profissional.mensagens} />}
+            />
           </Route>
         </Route>
 
@@ -77,20 +88,22 @@ export function AppRouter() {
           <Route element={<DashboardLayout />}>
             <Route path={rotas.responsavel.raiz} element={<ResponsavelHomePage />} />
             <Route path="/responsavel/filhos/:alunoId" element={<FilhoDetailPage />} />
+            <Route
+              path={rotas.responsavel.mensagens}
+              element={<MensagensPage basePath={rotas.responsavel.mensagens} />}
+            />
+            <Route
+              path="/responsavel/mensagens/:usuarioId"
+              element={<MensagensPage basePath={rotas.responsavel.mensagens} />}
+            />
           </Route>
         </Route>
 
         <Route element={<RequireRole perfis={['ADMINISTRADOR']} />}>
           <Route element={<DashboardLayout />}>
-            <Route
-              path={rotas.admin.raiz}
-              element={
-                <PainelPlaceholder
-                  titulo="Administração da plataforma"
-                  descricao="Instituições, assinaturas e contas de profissionais."
-                />
-              }
-            />
+            <Route path={rotas.admin.raiz} element={<AdminHomePage />} />
+            <Route path={rotas.admin.instituicoes} element={<InstituicoesPage />} />
+            <Route path={rotas.admin.profissionais} element={<ProfissionaisPage />} />
           </Route>
         </Route>
       </Route>
