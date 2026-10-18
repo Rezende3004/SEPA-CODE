@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarDays, ClipboardList, Mail, Plus, UserRound } from 'lucide-react';
+import { ArrowLeft, CalendarDays, ClipboardList, LineChart, Mail, Plus, UserRound } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { Button } from '@/shared/components/ui/Button';
 import { Card, CardContent } from '@/shared/components/ui/Card';
@@ -52,10 +52,19 @@ export function AlunoDetailPage() {
         titulo={dados.nome}
         descricao={dados.observacoes || 'Sem observações registradas.'}
         acoes={
-          <Button onClick={() => setModalPlano(true)}>
-            <Plus aria-hidden="true" className="size-4" />
-            Novo plano
-          </Button>
+          <>
+            <Link
+              to={rotas.profissional.relatorio(dados.id)}
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-primary/30 bg-white px-3 text-sm font-semibold text-primary-dark hover:bg-primary-soft"
+            >
+              <LineChart aria-hidden="true" className="size-4" />
+              Relatório
+            </Link>
+            <Button onClick={() => setModalPlano(true)}>
+              <Plus aria-hidden="true" className="size-4" />
+              Novo plano
+            </Button>
+          </>
         }
       />
 

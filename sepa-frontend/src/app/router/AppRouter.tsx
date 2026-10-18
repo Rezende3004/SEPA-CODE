@@ -11,6 +11,10 @@ import { AlunoLayout } from '@/app/layouts/AlunoLayout';
 import { AlunoHomePage } from '@/features/execucao/pages/AlunoHomePage';
 import { ExecutarAtividadePage } from '@/features/execucao/pages/ExecutarAtividadePage';
 import { PreferenciasPage } from '@/features/execucao/pages/PreferenciasPage';
+import { RelatoriosPage } from '@/features/relatorios/pages/RelatoriosPage';
+import { RelatorioAlunoPage } from '@/features/relatorios/pages/RelatorioAlunoPage';
+import { ResponsavelHomePage } from '@/features/responsavel/pages/ResponsavelHomePage';
+import { FilhoDetailPage } from '@/features/responsavel/pages/FilhoDetailPage';
 import { DashboardLayout } from '@/app/layouts/DashboardLayout';
 import { PublicLayout } from '@/app/layouts/PublicLayout';
 import { ForbiddenPage } from '@/app/pages/ForbiddenPage';
@@ -54,6 +58,8 @@ export function AppRouter() {
               element={<PlanoDetailPage />}
             />
             <Route path={rotas.profissional.atividades} element={<CatalogoPage />} />
+            <Route path={rotas.profissional.relatorios} element={<RelatoriosPage />} />
+            <Route path="/profissional/relatorios/:alunoId" element={<RelatorioAlunoPage />} />
           </Route>
         </Route>
 
@@ -67,15 +73,8 @@ export function AppRouter() {
 
         <Route element={<RequireRole perfis={['RESPONSAVEL']} />}>
           <Route element={<DashboardLayout />}>
-            <Route
-              path={rotas.responsavel.raiz}
-              element={
-                <PainelPlaceholder
-                  titulo="Progresso dos meus filhos"
-                  descricao="Visão simplificada do acompanhamento e canal com os profissionais."
-                />
-              }
-            />
+            <Route path={rotas.responsavel.raiz} element={<ResponsavelHomePage />} />
+            <Route path="/responsavel/filhos/:alunoId" element={<FilhoDetailPage />} />
           </Route>
         </Route>
 

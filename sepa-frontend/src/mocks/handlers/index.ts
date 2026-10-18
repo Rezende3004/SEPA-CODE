@@ -4,6 +4,7 @@ import { atividadesHandlers } from './atividades';
 import { historicoHandlers } from './historico';
 import { instituicoesHandlers } from './instituicoes';
 import { planosHandlers } from './planos';
+import { relatoriosHandlers } from './relatorios';
 
 export const handlers = [
   ...authHandlers,
@@ -12,4 +13,5 @@ export const handlers = [
   ...atividadesHandlers,
   ...planosHandlers,
   ...historicoHandlers,
+  ...relatoriosHandlers,
 ];
