@@ -39,14 +39,14 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
             margin={{ top: 8, right: 16, bottom: 8, left: 0 }}
             accessibilityLayer
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#DCE3E6" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#D5E2EA" />
             <XAxis
               dataKey="data"
               tickFormatter={(valor: string) => formatarDataCurta(valor)}
               fontSize={12}
-              stroke="#566873"
+              stroke="#4B6273"
             />
-            <YAxis domain={[0, 100]} fontSize={12} stroke="#566873" unit="%" />
+            <YAxis domain={[0, 100]} fontSize={12} stroke="#4B6273" unit="%" />
             <Tooltip
               formatter={(valor, nome) => [
                 `${Number(valor).toFixed(1)}%`,
@@ -59,7 +59,7 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
               type="monotone"
               dataKey="resultado"
               name="resultado"
-              stroke="#2A6F97"
+              stroke="#1F5C8B"
               strokeWidth={2}
               dot={{ r: 3 }}
               isAnimationActive={false}
@@ -68,7 +68,7 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
               type="monotone"
               dataKey="mediaMovel"
               name="mediaMovel"
-              stroke="#F4A261"
+              stroke="#E07A2F"
               strokeWidth={2}
               strokeDasharray="6 4"
               dot={false}
@@ -78,7 +78,7 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
               type="monotone"
               dataKey="ewma"
               name="ewma"
-              stroke="#E76F51"
+              stroke="#B8860B"
               strokeWidth={2}
               strokeDasharray="2 3"
               dot={false}

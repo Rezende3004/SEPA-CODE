@@ -2,52 +2,54 @@ import type { Config } from 'tailwindcss';
 
 /**
  * Fonte única dos tokens visuais do SEPA.
- * A paleta foi derivada do protótipo (gráfico do motor de IA) e ajustada
- * para contraste WCAG AA. O painel do aluno usa tons mais suaves.
+ * Identidade cromática: azul, laranja, amarelo e branco.
+ * Tons de apoio (soft/dark) pertencem a essas quatro famílias e mantêm
+ * contraste WCAG AA para texto.
  */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        canvas: '#F7F5F0',
+        canvas: '#FFFFFF',
         surface: '#FFFFFF',
-        ink: '#1F2D36',
-        muted: '#566873',
-        line: '#DCE3E6',
+        ink: '#173042',
+        muted: '#4B6273',
+        line: '#D5E2EA',
         primary: {
-          DEFAULT: '#2A6F97',
-          dark: '#1F5675',
-          soft: '#E7F0F5',
+          DEFAULT: '#1F5C8B',
+          dark: '#154466',
+          soft: '#E7F1F8',
         },
         secondary: {
-          DEFAULT: '#F4A261',
-          dark: '#B86E2C',
-          soft: '#FDF1E4',
+          DEFAULT: '#E07A2F',
+          dark: '#A95312',
+          soft: '#FCEBDE',
         },
         accent: {
-          DEFAULT: '#E76F51',
-          soft: '#FBEAE5',
+          DEFAULT: '#F2C14E',
+          dark: '#7A5A00',
+          soft: '#FFF6D8',
         },
         success: {
-          DEFAULT: '#4F8A6D',
-          soft: '#E9F2EC',
+          DEFAULT: '#1F5C8B',
+          soft: '#E7F1F8',
         },
         warning: {
-          DEFAULT: '#A8641C',
-          soft: '#FBF0E1',
+          DEFAULT: '#7A5A00',
+          soft: '#FFF6D8',
         },
         danger: {
-          DEFAULT: '#B4483C',
-          soft: '#F9E9E7',
+          DEFAULT: '#A95312',
+          soft: '#FCEBDE',
         },
         kid: {
-          canvas: '#FBF8F3',
+          canvas: '#FFFFFF',
           surface: '#FFFFFF',
-          primary: '#2F6F7E',
-          soft: '#E8F2F3',
-          accent: '#C9854E',
-          muted: '#4A5E66',
+          primary: '#1F5C8B',
+          soft: '#E7F1F8',
+          accent: '#E07A2F',
+          muted: '#173042',
         },
       },
       fontFamily: {

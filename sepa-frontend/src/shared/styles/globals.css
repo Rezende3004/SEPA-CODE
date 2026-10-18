@@ -18,14 +18,14 @@
   }
 
   :focus-visible {
-    outline: 3px solid #2a6f97;
+    outline: 3px solid #1f5c8b;
     outline-offset: 2px;
     border-radius: 4px;
   }
 
   ::selection {
-    background-color: #cfe3ee;
-    color: #1f2d36;
+    background-color: #cfe3f2;
+    color: #173042;
   }
 }
 
@@ -39,7 +39,7 @@
   }
 
   .sepa-kid-focus:focus-visible {
-    outline: 4px solid #2f6f7e;
+    outline: 4px solid #1f5c8b;
     outline-offset: 4px;
   }
 }

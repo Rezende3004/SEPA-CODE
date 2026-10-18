@@ -101,9 +101,9 @@ componente → features/x/hooks.ts (React Query) → features/x/api.ts (Axios) �
 
 ## 9. Design e acessibilidade
 
-- Não havia prints do Figma no repositório, apenas o gráfico do protótipo Python. A paleta
-  foi derivada dele (azul `#2A6F97`, areia `#F4A261`, coral `#E76F51`) e validada para
-  contraste AA.
+- Não havia prints do Figma no repositório, apenas o gráfico do protótipo Python. A identidade
+  visual foi personalizada com as quatro cores do projeto — azul `#1F5C8B`, laranja `#E07A2F`,
+  amarelo `#F2C14E` e branco `#FFFFFF` — e validada para contraste AA.
 - Tokens centralizados em `tailwind.config.ts` (cores, raios, sombras, tipografia) e
   `shared/styles/tokens.css` (escala de fonte e alvo de toque).
 - Alvos de toque ≥ 48 px no painel do aluno; foco visível de 3–4 px; navegação completa

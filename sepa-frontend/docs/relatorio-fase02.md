@@ -110,8 +110,9 @@ formulário.
 ### Diferenças em relação ao protótipo
 
 - Não havia prints do Figma no repositório de trabalho. A referência visual disponível era o
-  gráfico gerado por `iasepa.py` (`docs/design/dashboard-referencia.png`), do qual foi derivada a
-  paleta (azul `#2A6F97`, areia `#F4A261`, coral `#E76F51`).
+  gráfico gerado por `iasepa.py` (`docs/design/dashboard-referencia.png`). A identidade visual foi
+  personalizada com as quatro cores do projeto — azul `#1F5C8B`, laranja `#E07A2F`, amarelo
+  `#F2C14E` e branco `#FFFFFF`.
 - A área do aluno adota tokens próprios mais suaves (`kid.*`) para reduzir estímulos, mantendo a
   mesma identidade dos dashboards adultos.
 - A curva do relatório reproduz a lógica do protótipo Python (resultado bruto, tendência suavizada
