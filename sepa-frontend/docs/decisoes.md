@@ -153,3 +153,13 @@ componente → features/x/hooks.ts (React Query) → features/x/api.ts (Axios) �
 - A integração foi validada pelo teste de fumaça em
   `sepa-backend/apps/usuarios/tests/test_smoke.py` e por requisições através do proxy do Vite.
 
+## 13. Correções de contrato da revisão
+
+- Cadastro público de **profissional** retorna `{ usuario, pendente: true, detail }` sem tokens e
+  com `ativo=false`; o formulário mostra “aguardando ativação” e não redireciona ao painel.
+- O nível efetivo de uma atividade agora é `Contem.nivel_atribuido`: o aluno recebe
+  `nivelAtribuido` em `/aluno/atividades/`, e o plano usa esse valor em `nivelDificuldade`.
+  O aceite de recomendação não altera mais o catálogo, apenas os planos do aluno.
+- O mock MSW foi ajustado para simular `niveisAtribuidos` por plano, mantendo os testes alinhados
+  ao backend.
+- Login e conta inativa retornam o mesmo 401 genérico; o frontend exibe a mensagem do `detail`.

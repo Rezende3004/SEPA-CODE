@@ -26,7 +26,7 @@ regras de negócio em serviços:
 
 | RF | Backend |
 |---|---|
-| RF-001 | `POST /auth/login/`, `POST /auth/refresh/`, `POST /auth/register/`, `GET /me/`, `POST /auth/logout/` |
+| RF-001 | `POST /auth/login/`, `POST /auth/refresh/`, `POST /auth/register/`, `GET /me/`, `POST /auth/logout/`. Cadastro de profissional fica pendente (`ativo=false`) até ativação por administrador. |
 | RF-002 | `/api/alunos/` (GET/POST), `/api/alunos/:id/`, `/api/planos/` (GET/POST/PATCH/DELETE) |
 | RF-003 | `/api/planos/:id/atividades/` (POST/DELETE), `/api/atividades/` |
 | RF-004 | `POST /api/historico/` |
@@ -42,10 +42,13 @@ regras de negócio em serviços:
 - `common/permissions.py` define as permissões por `tipo_usuario` e as funções de verificação de
   aluno/plano/recomendação.
 - `common/mixins.py` aplica o recorte de querysets:
-  - administrador: todos os registros;
+  - administrador global (`is_superuser=True`): todos os registros;
+  - administrador institucional: apenas a própria instituição;
   - profissional: registros da própria instituição;
   - responsável: somente filhos vinculados;
   - aluno: somente o próprio registro.
+- Cadastros públicos de profissional nascem inativos; o login e qualquer token JWT são rejeitados
+  enquanto `is_active=False`.
 - O `instituicao_id` nunca vem do cliente; é derivado do token e usado para preencher o servidor.
 - Acesso cruzado retorna 403, mantendo o contrato do frontend.
 - Objetos de recomendação e relatório também passam pela mesma checagem de escopo.
@@ -64,8 +67,10 @@ regras de negócio em serviços:
 - A explicabilidade usa `pred_contribs=True` do XGBoost; as contribuições absolutas são normalizadas
   para pesos que somam 1 e persistidas em `RecomendacaoIA.fatores`.
 - `analisar_aluno` cria `AnaliseAprendizado` (pontuação, tendência) e `RecomendacaoIA` (nível atual,
-  nível sugerido, fatores, atividades sugeridas). A decisão é exclusivamente humana (RN-004):
-  `aceitar/` registra `decidido_por`/`decidido_em` e aplica o nível; `rejeitar/` não altera nada.
+  nível sugerido, fatores, atividades sugeridas). `nivel_atual` é lido de `Contem.nivel_atribuido`.
+  A decisão é exclusivamente humana (RN-004): `aceitar/` registra `decidido_por`/`decidido_em` e
+  atualiza **apenas** `Contem.nivel_atribuido` nos planos do aluno; o catálogo não muda. `rejeitar/`
+  não altera nada.
 - Se o artefato ainda não existir, o serviço usa uma heurística de fallback; o seed e o comando de
   treino geram o `.joblib`.
 
@@ -95,11 +100,18 @@ Problemas encontrados e correções:
 4. **Erros:** um exception handler padroniza `{detail}` para 401/403/404 e preserva `{campo: [...]}`
    nas validações, que é o formato lido pelos formulários.
 5. **Minimização:** o serializer de aluno omite `observacoes` para responsáveis, alinhado ao RNF-006.
+6. **Profissional pendente:** cadastro público retorna 201 sem tokens e com `ativo=false`; o
+   formulário exibe “aguardando ativação” em vez de navegar para um painel inacessível.
+7. **Nível por plano:** o aluno recebe `nivelAtribuido` em `/aluno/atividades/` e o plano devolve o
+   nível efetivo do `Contem`; o aceite da IA não altera o catálogo. O mock MSW foi atualizado para
+   manter a mesma semântica nos testes do frontend.
 
 Teste de fumaça `apps/usuarios/tests/test_smoke.py` percorre o fluxo completo com `APIClient`:
 login do profissional → criação de plano → associação de atividade → login do aluno → listagem de
 atividades → registro de histórico → análise da IA → aceite da recomendação → login do responsável
-→ consulta do relatório. O teste passa junto com a suíte (86 testes, cobertura total de 89,8% com a configuração de omissão de migrations/seed/admin).
+→ consulta do relatório. O teste passa junto com a suíte de 97 testes; a cobertura fica em torno de
+90% com a configuração de omissão de migrations/seed/admin. A suíte também foi executada contra
+PostgreSQL (ver seção de verificação).
 
 ---
 
@@ -112,6 +124,7 @@ Alterações em relação ao SQL de novembro/2025:
 | `Aluno.responsavel` `NOT NULL` + `PROTECT` | RN-001, evitando aluno órfão e exclusão acidental do responsável |
 | `HistoricoAtividade.resultado` numérico 0–100, `tentativas`, `tempo_resposta_seg`, `pediu_ajuda` | RF-004/RF-008; o SQL original tinha resultado textual |
 | `RecomendacaoIA.nivel_atual`, `nivel_sugerido`, `fatores` JSON, `decidido_por`, `decidido_em` | RF-009, explicabilidade e RN-004 |
+| `Contem.nivel_atribuido` (1–5, default = nível da atividade) | Permite que o aceite da IA atue por plano, sem alterar o catálogo; migração preenche os registros existentes |
 | `Mensagem.destinatario`, `lida` | RF-007; o SQL original não previa o destinatário |
 | `Responsavel.consentimento_em` | LGPD: registro do consentimento |
 | `ItemAtividade` (nova tabela) | `Atividade.itens` do contrato jogável, com ordem e integridade |
@@ -122,7 +135,17 @@ Alterações em relação ao SQL de novembro/2025:
 | `CheckConstraint` nível 1–5 e resultado 0–100 | integridade no banco, além da validação de API |
 
 `Aluno.responsavel` continua apontando para `Responsavel` (PK = usuário). A instituição do aluno é
-derivada de `Usuario.instituicao`; não há duplicação de coluna.
+derivada de `Usuario.instituicao`; não há duplicação de coluna. `Contem.nivel_atribuido` é preenchido
+com o nível da atividade na criação do vínculo e ajustado apenas pelo aceite de recomendação.
+
+### Verificação com PostgreSQL
+
+A suíte foi executada com **PostgreSQL 16.10** usando a variável `DATABASE_URL`; o banco foi criado
+do zero e todas as migrations foram aplicadas. O ambiente desta máquina não possui Docker instalado,
+então não foi possível executar literalmente `docker compose up`; o `docker-compose.yml` usa a mesma
+imagem PostgreSQL 16 e é o caminho reproduzível no CI/ambiente com Docker. Resultado: **97 testes
+passando**, cobertura de **89,17%** (configuração de omissão de migrations/seed/admin). O SQLite
+permanece somente como fallback de desenvolvimento/teste local.
 
 ---
 
@@ -232,8 +255,12 @@ CI (`ci.yml`): Postgres 16 como serviço, instalação de `requirements.txt`, `r
 
 - **Autenticação:** JWT Bearer; access de 15 minutos e refresh de 7 dias; rotação e blacklist de
   refresh; bcrypt como hasher principal; throttling de login e cadastro; logout com revogação.
+  Credencial inválida e conta inativa devolvem o mesmo 401 genérico; conta profissional recém-cadastrada
+  fica inativa até ativação administrativa.
 - **Autorização:** RBAC por tipo de usuário; isolamento por instituição em todos os querysets;
-  responsável vê só os próprios filhos; aluno só os próprios dados; 403 para acesso cruzado.
+  administrador institucional restrito à própria instituição; admin global somente via
+  `is_superuser=True`; responsável vê só os próprios filhos; aluno só os próprios dados; 403 para
+  acesso cruzado.
 - **Minimização:** serializers por perfil; `observacoes` clínicas não vão para o responsável;
   aluno recebe apenas o necessário para executar atividades; nenhum identificador no treino de IA.
 - **RNs:** RN-001 no banco e serviço; RN-002/003 no escopo; RN-004 com decisão explícita, registro
@@ -244,5 +271,6 @@ CI (`ci.yml`): Postgres 16 como serviço, instalação de `requirements.txt`, `r
   profissionais e status de assinatura, com IP e user-agent.
 - **Produção:** `DEBUG=False`, `SECRET_KEY` obrigatória, HSTS, SSL redirect, cookies seguros,
   `SECURE_PROXY_SSL_HEADER`, `X_FRAME_OPTIONS=DENY`, CORS/CSRF por env, erros sem stack trace.
+  `seed_demo` recusa execução com `DEBUG=False`.
 - **Dependências:** `pip-audit` sem vulnerabilidades conhecidas; `check --deploy` sem alertas
   relevantes e OpenAPI gerado sem erros/avisos.

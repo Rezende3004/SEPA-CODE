@@ -19,6 +19,8 @@ relativas a `VITE_API_URL` (padrão `/api`).
   - `409` → `{ "detail": "..." }` (conflito de estado, ex.: recomendação já decidida)
 - **Datas:** ISO 8601 (`2026-10-18T13:00:00.000Z`).
 - **IDs:** numéricos, espelhando o schema PostgreSQL.
+- **Administração:** `ADMINISTRADOR` com `instituicao` gerencia apenas a própria instituição;
+  `is_superuser=True` representa o administrador global. Acesso cruzado → `403`.
 - **Tokens (mock):** access com 120 s, refresh com 8 h. O frontend renova automaticamente no 401.
 - **Paginação:** não há; o seed é pequeno. O backend pode paginar preservando a lista no campo
   `results`, desde que o frontend seja ajustado no `api.ts` da feature.
@@ -31,20 +33,21 @@ Tipos TypeScript em `src/shared/types/models.ts`. Entidades: `Instituicao`, `Usu
 
 Extensões em relação ao schema original, necessárias para os requisitos:
 
-| Campo/recurso                             | Justificativa                                                                                    |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `Usuario.ativo`                           | RF-010 (ativar/desativar profissionais).                                                         |
-| `Usuario.instituicaoId: number \| null`   | Administrador da plataforma não pertence a instituição.                                          |
-| `Atividade.itens: ItemAtividade[]`        | Conteúdo jogável (emoji, rótulo, dica) para os motores de associação e sequência.                |
-| `AtividadeAtribuida`                      | Resposta de `/aluno/atividades/` com `planoId`, `planoNome`, `totalExecucoes`, `ultimaExecucao`. |
-| `AlunoResumo`                             | Resposta de `/alunos/` com responsável, instituição, média recente e tendência.                  |
-| `RecomendacaoIA.nivelAtual` e `fatores[]` | Explicabilidade da IA (RF-009).                                                                  |
-| `GET /responsaveis/`                      | Seleção de responsável no cadastro de aluno.                                                     |
-| `GET /instituicoes/`                      | Seleção de instituição no cadastro público.                                                      |
-| `GET /planos/:id/`                        | Abertura direta do plano.                                                                        |
-| `POST /mensagens/:id/lida/`               | Marcação de leitura (RF-007).                                                                    |
-| `GET /usuarios/:id/`                      | Nome do contato em conversa ainda sem mensagens.                                                 |
-| `GET /admin/*`                            | Área do administrador (RF-010).                                                                  |
+| Campo/recurso                             | Justificativa                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `Usuario.ativo`                           | RF-010 (ativar/desativar profissionais).                                                                           |
+| `Usuario.instituicaoId: number \| null`   | Administrador da plataforma não pertence a instituição.                                                            |
+| `Atividade.itens: ItemAtividade[]`        | Conteúdo jogável (emoji, rótulo, dica) para os motores de associação e sequência.                                  |
+| `AtividadeAtribuida`                      | Resposta de `/aluno/atividades/` com `planoId`, `planoNome`, `nivelAtribuido`, `totalExecucoes`, `ultimaExecucao`. |
+| `Contem.nivel_atribuido`                  | Nível efetivo da atividade em cada plano; aceite de recomendação atua só aqui, não no catálogo.                    |
+| `AlunoResumo`                             | Resposta de `/alunos/` com responsável, instituição, média recente e tendência.                                    |
+| `RecomendacaoIA.nivelAtual` e `fatores[]` | Explicabilidade da IA (RF-009).                                                                                    |
+| `GET /responsaveis/`                      | Seleção de responsável no cadastro de aluno.                                                                       |
+| `GET /instituicoes/`                      | Seleção de instituição no cadastro público.                                                                        |
+| `GET /planos/:id/`                        | Abertura direta do plano.                                                                                          |
+| `POST /mensagens/:id/lida/`               | Marcação de leitura (RF-007).                                                                                      |
+| `GET /usuarios/:id/`                      | Nome do contato em conversa ainda sem mensagens.                                                                   |
+| `GET /admin/*`                            | Área do administrador (RF-010).                                                                                    |
 
 ## Autenticação
 
@@ -74,7 +77,7 @@ Extensões em relação ao schema original, necessárias para os requisitos:
 }
 ```
 
-Erros: `401` credenciais inválidas; `403` conta desativada ou assinatura suspensa.
+Erros: `401` genérico para credenciais inválidas ou conta inativa; `403` assinatura da instituição suspensa.
 
 ### POST `/auth/refresh/`
 
@@ -93,7 +96,14 @@ Campos comuns: `nome`, `email`, `senha` (mín. 8), `tipoUsuario` (`PROFISSIONAL`
   `registroProfissional`.
 - `RESPONSAVEL`: `telefone`.
 
-`201` com o mesmo corpo do login. Erros: `400` por campo; instituição precisa estar `ATIVA`.
+`201`:
+
+- **RESPONSAVEL:** mesmo corpo do login (tokens + usuário) e sessão iniciada.
+- **PROFISSIONAL:** `{ "usuario": {...}, "pendente": true, "detail": "..." }`, **sem tokens**. A conta é
+  criada com `ativo=false` e só pode ser ativada por um administrador. Profissional inativo não
+  autentica e tokens emitidos antes da desativação deixam de funcionar.
+
+Erros: `400` por campo; instituição precisa estar `ATIVA`.
 
 ### GET `/me/`
 
@@ -179,8 +189,9 @@ Requer `PROFISSIONAL` (ou administrador).
 
 ### GET `/atividades/`
 
-Catálogo filtrado pela instituição da sessão (RN-003). Administrador recebe todas.
-Parâmetros opcionais: `busca`, `tipo` (`ASSOCIACAO` | `SEQUENCIA`), `nivel` (1–5).
+Catálogo filtrado pela instituição da sessão (RN-003). Administrador institucional vê a própria
+instituição; superusuário vê todas. Parâmetros opcionais: `busca`, `tipo`
+(`ASSOCIACAO` | `SEQUENCIA`), `nivel` (1–5).
 
 `200`:
 
@@ -218,12 +229,17 @@ Requer `ALUNO`. Retorna as atividades dos planos do aluno autenticado, com metad
     "titulo": "Quem é este animal?",
     "planoId": 1,
     "planoNome": "Plano de comunicação e rotina — Lucas",
+    "nivelAtribuido": 2,
+    "nivelDificuldade": 2,
     "totalExecucoes": 16,
     "ultimaExecucao": "2026-10-17T13:00:00.000Z",
     "...": "demais campos de Atividade"
   }
 ]
 ```
+
+`nivelAtribuido` é o nível efetivo do `Contem` para o plano do aluno; `nivelDificuldade` é
+sobreposto por ele nesta resposta (o catálogo continua com o nível original).
 
 ## Histórico de execução
 
@@ -255,7 +271,8 @@ Escopo igual ao de alunos. Parâmetro opcional: `?aluno=:id`.
 
 ### GET `/planos/:id/`
 
-`200` com `PlanoDetalhado`; `403` fora do escopo.
+`200` com `PlanoDetalhado`; `403` fora do escopo. Cada item de `atividades` inclui
+`nivelAtribuido` (o nível do `Contem` naquele plano) e `nivelDificuldade` reflete esse valor.
 
 ### POST `/planos/`
 
@@ -372,8 +389,10 @@ tendência: slope ≥ 1 → `EVOLUCAO`, ≤ −1 → `REGRESSAO`, caso contrári
 
 ### POST `/recomendacoes/:id/aceitar/`
 
-**RN-004:** somente `PROFISSIONAL` da instituição do aluno. Aplica `nivelSugerido` (clamp 1–5) às
-atividades sugeridas e marca `ACEITA`. Nenhuma alteração ocorre sem esta chamada explícita.
+**RN-004:** somente `PROFISSIONAL` da instituição do aluno. Aplica `nivelSugerido` (clamp 1–5) em
+`Contem.nivel_atribuido` **apenas para os planos do aluno desta recomendação**. O catálogo
+(`Atividade.nivel_dificuldade`) não é alterado. Marca `ACEITA`, grava `decidido_por`/`decidido_em` e
+audita. Nenhuma alteração ocorre sem esta chamada explícita.
 `200` com a recomendação atualizada; `403` perfil/instituição; `409` se já decidida.
 
 ### POST `/recomendacoes/:id/rejeitar/`
@@ -464,12 +483,12 @@ não consegue autenticar.
 
 ## Regras de negócio no “servidor”
 
-| Regra                               | Onde é aplicada                                              |
-| ----------------------------------- | ------------------------------------------------------------ |
-| RN-001 — aluno exige responsável    | `POST /alunos/` → `400`; validação equivalente no formulário |
-| RN-002 — isolamento por instituição | leitura/escrita de alunos e planos → `403`                   |
-| RN-003 — atividades por instituição | catálogo, associação e histórico → filtro/`403`              |
-| RN-004 — IA não altera sozinha      | apenas `aceitar/` de profissional aplica nível               |
+| Regra                               | Onde é aplicada                                                                   |
+| ----------------------------------- | --------------------------------------------------------------------------------- |
+| RN-001 — aluno exige responsável    | `POST /alunos/` → `400`; validação equivalente no formulário                      |
+| RN-002 — isolamento por instituição | leitura/escrita de alunos e planos → `403`                                        |
+| RN-003 — atividades por instituição | catálogo, associação e histórico → filtro/`403`                                   |
+| RN-004 - IA não altera sozinha      | apenas `aceitar/` de profissional aplica o nível em `Contem`, nos planos do aluno |
 
 ## Seed de demonstração
 

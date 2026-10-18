@@ -17,7 +17,7 @@ cd sepa-backend
 cp .env.example .env      # no Windows: copy .env.example .env
 # troque SECRET_KEY e senhas no .env
 docker compose up --build
-docker compose exec api python manage.py seed_demo --force
+docker compose exec -e DJANGO_SETTINGS_MODULE=config.settings.dev api python manage.py seed_demo --force
 ```
 
 A API fica em `http://localhost:8000`:
@@ -27,8 +27,9 @@ A API fica em `http://localhost:8000`:
 - OpenAPI: `http://localhost:8000/api/schema/`
 - Admin Django: `http://localhost:8000/admin/`
 
-O container aplica as migrations automaticamente no entrypoint. O seed não roda sozinho para
-evitar sobrescrever dados; execute o comando explicitamente. O modelo de IA também pode ser treinado
+O container aplica as migrations automaticamente no entrypoint. O seed **só roda com
+`DEBUG=True`**; por isso o comando acima sobrepõe o settings para `dev` dentro do container. O seed
+não roda automaticamente para evitar sobrescrever dados. O modelo de IA também pode ser treinado
 manualmente:
 
 ```bash
@@ -61,7 +62,7 @@ Senha de todos: `Sepa@2026`. Dados fictícios.
 
 | Perfil | E-mail |
 |---|---|
-| Administrador | `admin@sepa.exemplo` |
+| Administrador global (`is_superuser=True`) | `admin@sepa.exemplo` |
 | Psicóloga (instituição A) | `ana.psicologa@sepa.exemplo` |
 | Fonoaudiólogo (instituição A) | `bruno.fono@sepa.exemplo` |
 | Pedagoga (instituição A) | `carla.pedagoga@sepa.exemplo` |
@@ -70,12 +71,17 @@ Senha de todos: `Sepa@2026`. Dados fictícios.
 | Aluno | `lucas.aluno@sepa.exemplo` |
 | Aluno (estagnação) | `helena.aluno@sepa.exemplo` |
 
+> Cadastros públicos de **profissional** são criados com `ativo=false` e ficam aguardando ativação
+> por um administrador. Cadastros de responsável continuam com login imediato. O administrador
+> institucional gerencia apenas a própria instituição; o administrador global é identificado por
+> `is_superuser=True`.
+
 ## Comandos
 
 | Comando | Descrição |
 |---|---|
 | `python manage.py migrate` | aplica migrations |
-| `python manage.py seed_demo --force` | recria os dados de demonstração e treina o modelo se necessário |
+| `python manage.py seed_demo --force` | recria os dados de demonstração (exclusivo de `DEBUG=True`) e treina o modelo se necessário |
 | `python manage.py treinar_modelo` | treina o XGBoost com features anonimizadas e imprime métricas |
 | `python manage.py gerar_recomendacoes` | gera análises/recomendações pendentes via IA |
 | `pytest` | testes |
@@ -138,8 +144,14 @@ docs/              contrato, decisões, relatório e evidências
 
 - JWT com rotação/blacklist, access curto e refresh longo; bcrypt como hasher principal.
 - RBAC por `tipo_usuario` + mixins de escopo por instituição; 403 para acesso cruzado.
+- Administrador institucional vê somente a própria instituição; `is_superuser=True` é o
+  administrador global documentado.
+- Cadastros de profissional ficam inativos até ativação administrativa; login inválido e conta
+  inativa devolvem o mesmo 401 genérico.
 - Serializers minimizam dados por perfil (responsável não recebe observações clínicas).
 - Mensagens só entre profissional e responsável que compartilham aluno.
+- Aceite de recomendação altera `Contem.nivel_atribuido` apenas nos planos do aluno, sem tocar no
+  catálogo de atividades.
 - Auditoria de login, decisões de IA, planos, mensagens e ações administrativas.
 - Treino de IA somente com features numéricas, sem identificadores.
 - Produção com HSTS, cookies seguros, SSL redirect, proxy header, `X_FRAME_OPTIONS=DENY`.

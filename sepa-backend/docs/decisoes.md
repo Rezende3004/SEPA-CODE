@@ -31,17 +31,19 @@ erros DRF (`{campo: [...]}` ou `{detail}`), tokens Bearer, IDs numéricos e data
 | 1 | Refresh rotacionado | O mock devolve só `access`, mas SimpleJWT com rotação devolve também um novo `refresh`; o frontend antigo ignorava esse valor e o refresh antigo é blacklistado. | Mantivemos rotação + blacklist e corrigimos o frontend para salvar o novo refresh em `tokenStore`. Bug real do frontend, documentado também lá. |
 | 2 | Escopo de mensagens | Mock valida apenas a mesma instituição; a task exige profissional e responsável que compartilham pelo menos um aluno. | Implementado o vínculo `Aluno.responsavel` + `Plano.profissional`; mensagens fora do vínculo → 403. Mais restritivo e adequado à LGPD. |
 | 3 | Histórico | Mock valida a instituição da atividade; a task exige que ela esteja em um plano do aluno. | `execucao/services.py` valida `Contem`; atividade solta → 400. |
-| 4 | Aceite de recomendação | Mock altera `Atividade.nivel_dificuldade` das atividades sugeridas; a task sugere `Contem.nivel_atribuido` caso o contrato não defina. | O contrato define o efeito; seguimos o mock: nível da atividade é atualizado dentro de transação, com `decidido_por`, `decidido_em` e auditoria. `nivel_atribuido` fica como evolução futura. |
+| 4 | Aceite de recomendação | Mock altera `Atividade.nivel_dificuldade` das atividades sugeridas. | **Corrigido na revisão:** `Contem.nivel_atribuido` guarda o nível por plano; `aceitar/` altera somente os planos do aluno da recomendação e **não** toca no catálogo. |
 | 5 | Relatório para aluno | O contrato lista ADMIN/PROFISSIONAL/RESPONSAVEL; o handler permite também ALUNO para o próprio registro. | Mantido o comportamento do handler; a verificação é a mesma `can_view_aluno`, sem expor dados de terceiros. |
 | 6 | `GET /recomendacoes/:id/` | Existe no handler, não estava documentado. | Implementado. |
 | 7 | Minimização | O mock envia `observacoes` para todos. | Responsável recebe `observacoes: null`; aluno não recebe anotações clínicas em `/me` nem nas atividades. `observacoes_ia` só aparece para profissional/admin via análise/recomendação. |
 | 8 | `Atividade.itens` | O SQL original só tem mídia; o frontend precisa de itens jogáveis. | Criado o modelo `ItemAtividade` (FK, ordem, tipo, valor, rótulo, dica); `conteudoIds` vem do through `Utiliza`. |
 | 9 | `ativo` | O Django usa `is_active`; o camel-case geraria `isActive`. | Serializers expõem explicitamente `ativo` com `source="is_active"`. |
 | 10 | Sem paginação | O frontend espera arrays. | `DEFAULT_PAGINATION_CLASS=None`. |
-| 11 | Seed | O seed TypeScript tem IDs fixos usados nas evidências. | `seed_demo` cria IDs explícitos (usuários 1–16, atividades 1–15, planos 1–6 etc.) e reseta sequences no PostgreSQL. |
-| 12 | Login | SimpleJWT usa `authenticate(username=...)` e devolve 401 para usuário inativo. | View customizada busca por e-mail, valida a senha, retorna 403 diferenciado para conta inativa/instituição suspensa e inclui `usuario` no corpo. |
+| 11 | Seed | O seed TypeScript tem IDs fixos usados nas evidências. | `seed_demo` cria IDs explícitos (usuários 1–16, atividades 1–15, planos 1–6 etc.) e reseta sequences no PostgreSQL. **Na revisão, passou a abortar com `DEBUG=False`.** |
+| 12 | Login | SimpleJWT usa `authenticate(username=...)` e devolve 401 para usuário inativo. | View customizada busca por e-mail e valida a senha. **Na revisão, credencial inválida e conta inativa devolvem o mesmo 401 genérico.** Instituição suspensa continua 403. |
 | 13 | OpenAPI | APIViews não têm serializer automaticamente. | Adicionados `@extend_schema` e hook oficial do camel-case; schema gerado sem erros e sem avisos. |
-| 14 | Banco em testes | O ambiente local não tem PostgreSQL em todos os momentos. | `test.py` usa SQLite quando `DATABASE_URL` não está definido; CI e Docker usam PostgreSQL 16. Produção exige `DATABASE_URL`. |
+| 14 | Banco em testes | O ambiente local não tem PostgreSQL em todos os momentos. | `test.py` usa SQLite quando `DATABASE_URL` não está definido; CI e Docker usam PostgreSQL 16. Produção exige `DATABASE_URL`. A revisão inclui execução com PostgreSQL real. |
+| 15 | Cadastro profissional | O fluxo original criava profissional ativo. | **Revisão:** profissional público nasce `is_active=False`; o endpoint retorna `{usuario, pendente, detail}` sem tokens. Só ADMIN ativa; inativo não autentica nem usa token antigo. |
+| 16 | Escopo ADMIN | Mixins liberavam tudo para `ADMINISTRADOR`. | **Revisão:** admin institucional fica restrito à própria instituição; acesso global exige `is_superuser=True`, documentado. |
 
 ## 3. Modelo e segurança
 
@@ -53,6 +55,8 @@ erros DRF (`{campo: [...]}` ou `{detail}`), tokens Bearer, IDs numéricos e data
   aluno/data e aluno/atividade/data.
 - `RecomendacaoIA` tem `nivel_atual`, `nivel_sugerido` (1–5), `fatores` JSON, `decidido_por` e
   `decidido_em`; as atividades são N:N via `Sugere`.
+- `Contem.nivel_atribuido` (1–5) guarda o nível efetivo da atividade no plano. Se não for informado,
+  o `save()` copia o nível do catálogo; a migração de dados preencheu os registros existentes.
 - `Mensagem` tem remetente, destinatário, `lida` e constraint que impede mensagem para si mesmo.
 - `Auditoria` registra usuário, ação, objeto, detalhes, IP e user-agent. Admin é somente leitura.
 
@@ -63,6 +67,11 @@ erros DRF (`{campo: [...]}` ou `{detail}`), tokens Bearer, IDs numéricos e data
 - `common/mixins.py` concentra o recorte de querysets por perfil/instituição.
 - Objetos de outra instituição retornam **403** (contrato), não 404.
 - Listagens não confiam em `instituicaoId` do cliente; o valor é sempre derivado do token.
+- **ADMINISTRADOR institucional** (com `instituicao`) fica restrito à própria instituição em todos
+  os recursos, inclusive `/api/admin/*`. O **admin global** é um usuário com `is_superuser=True` e
+  vê todas as instituições; o seed cria `admin@sepa.exemplo` dessa forma.
+- Cadastro público de profissional nasce inativo; `is_active=False` bloqueia login e qualquer token
+  JWT (validação padrão do `JWTAuthentication`). A ativação é feita por `PATCH /admin/profissionais/:id/`.
 
 ## 5. IA
 
@@ -73,7 +82,28 @@ erros DRF (`{campo: [...]}` ou `{detail}`), tokens Bearer, IDs numéricos e data
   `fatores`.
 - Se o artefato não existir, o serviço usa heurística de fallback; o seed e o comando de treino
   geram o modelo. Nenhuma recomendação altera plano/atividade sem `aceitar/`.
+- **Aceite:** o serviço atualiza `Contem.nivel_atribuido` somente nos planos do aluno da
+  recomendação; `Atividade.nivel_dificuldade` permanece intacto. `nivel_atual` do fluxo de análise
+  também é lido do nível atribuído no plano.
 - Sem filas assíncronas nesta fase.
+
+## 7. Correções da revisão de entrega
+
+1. **Profissional pendente:** cadastro público cria `is_active=False`; resposta 201 sem tokens,
+   com `pendente: true` e mensagem. Responsável continua com sessão imediata. O frontend exibe o
+   estado de aprovação e não tenta entrar.
+2. **Nível por plano:** `Contem.nivel_atribuido` (com data migration e check 1–5). O aceite muda
+   apenas as linhas `Contem` do aluno; serializers de plano e de `/aluno/atividades` devolvem
+   `nivelAtribuido` e usam esse valor como nível efetivo. O catálogo não muda.
+3. **Admin scope:** administrador institucional restrito à própria instituição; global somente com
+   `is_superuser=True`. Serviços e querysets de admin também aplicam a regra.
+4. **Seed seguro:** `seed_demo` lança `CommandError` quando `DEBUG=False`. No Docker, o comando de
+   seed usa `DJANGO_SETTINGS_MODULE=config.settings.dev` explicitamente.
+5. **Login genérico:** credencial inválida e conta inativa retornam exatamente o mesmo `401` com
+   `{ "detail": "E-mail ou senha inválidos." }`; o motivo fica só na auditoria.
+6. **PostgreSQL:** a suíte foi executada contra PostgreSQL 16.10 nativo (Docker não está instalado
+   nesta máquina); o CI e o `docker-compose.yml` usam PostgreSQL 16. O SQLite permanece apenas como
+   fallback de desenvolvimento/teste local.
 
 ## 6. Extra
 

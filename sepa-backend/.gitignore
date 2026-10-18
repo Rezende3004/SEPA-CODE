@@ -7,6 +7,8 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
+pytest-postgres.log
+*.log
 dist/
 staticfiles/
 media/
