@@ -2,6 +2,11 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { useAuth } from '@/features/auth/use-auth';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { RegisterPage } from '@/features/auth/pages/RegisterPage';
+import { ProfissionalDashboardPage } from '@/features/alunos/pages/ProfissionalDashboardPage';
+import { AlunosPage } from '@/features/alunos/pages/AlunosPage';
+import { AlunoDetailPage } from '@/features/alunos/pages/AlunoDetailPage';
+import { CatalogoPage } from '@/features/atividades/pages/CatalogoPage';
+import { PlanoDetailPage } from '@/features/planos/pages/PlanoDetailPage';
 import { DashboardLayout } from '@/app/layouts/DashboardLayout';
 import { PublicLayout } from '@/app/layouts/PublicLayout';
 import { ForbiddenPage } from '@/app/pages/ForbiddenPage';
@@ -37,15 +42,14 @@ export function AppRouter() {
       <Route element={<RequireAuth />}>
         <Route element={<RequireRole perfis={['PROFISSIONAL']} />}>
           <Route element={<DashboardLayout />}>
+            <Route path={rotas.profissional.raiz} element={<ProfissionalDashboardPage />} />
+            <Route path={rotas.profissional.alunos} element={<AlunosPage />} />
+            <Route path="/profissional/alunos/:alunoId" element={<AlunoDetailPage />} />
             <Route
-              path={rotas.profissional.raiz}
-              element={
-                <PainelPlaceholder
-                  titulo="Visão geral do profissional"
-                  descricao="Alunos, planos, relatórios e recomendações da instituição."
-                />
-              }
+              path="/profissional/alunos/:alunoId/planos/:planoId"
+              element={<PlanoDetailPage />}
             />
+            <Route path={rotas.profissional.atividades} element={<CatalogoPage />} />
           </Route>
         </Route>
 
