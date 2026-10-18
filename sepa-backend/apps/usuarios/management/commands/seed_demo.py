@@ -3,7 +3,8 @@ from __future__ import annotations
 import random
 from datetime import date, datetime, time, timedelta
 
-from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 from django.utils import timezone
 
@@ -72,6 +73,11 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if not settings.DEBUG:
+            raise CommandError(
+                "seed_demo é exclusivo de desenvolvimento e exige DEBUG=True. "
+                "Use as fixtures/migrations em produção."
+            )
         if Instituicao.objects.exists() and not options["force"]:
             self.stdout.write(
                 self.style.WARNING(
