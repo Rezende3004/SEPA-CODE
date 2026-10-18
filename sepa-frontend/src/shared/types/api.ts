@@ -8,6 +8,7 @@ export interface LoginResposta {
 
 export interface RefreshResposta {
   access: string;
+  refresh?: string;
 }
 
 export interface PontoCurva {

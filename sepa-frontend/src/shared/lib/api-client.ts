@@ -31,6 +31,9 @@ async function renovarAccessToken(): Promise<string> {
   if (!refresh) throw new Error('Sessão expirada.');
   const { data } = await axios.post<RefreshResposta>(`${API_URL}/auth/refresh/`, { refresh });
   tokenStore.setAccess(data.access);
+  if (data.refresh) {
+    tokenStore.setRefresh(data.refresh);
+  }
   return data.access;
 }
 

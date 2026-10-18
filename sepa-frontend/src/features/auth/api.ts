@@ -37,6 +37,9 @@ export async function recuperarSessao(): Promise<SessaoUsuario | null> {
   try {
     const { data } = await axios.post<RefreshResposta>(`${API_URL}/auth/refresh/`, { refresh });
     tokenStore.setAccess(data.access);
+    if (data.refresh) {
+      tokenStore.setRefresh(data.refresh);
+    }
     const resposta = await apiClient.get<{ usuario: SessaoUsuario }>('/me/');
     return resposta.data.usuario;
   } catch {
