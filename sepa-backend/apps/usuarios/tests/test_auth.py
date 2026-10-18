@@ -37,12 +37,15 @@ def test_login_rejeita_credenciais_invalidas(prof_a):
 
 
 @pytest.mark.django_db
-def test_login_bloqueia_conta_inativa(prof_a):
+def test_login_bloqueia_conta_inativa_com_401_generico(prof_a):
     prof_a.usuario.is_active = False
     prof_a.usuario.save(update_fields=["is_active"])
     client = APIClient()
-    resposta = login(client, prof_a.usuario.email)
-    assert resposta.status_code == 403
+    inativa = login(client, prof_a.usuario.email)
+    invalida = login(APIClient(), prof_a.usuario.email, "senha-errada")
+    assert inativa.status_code == 401
+    assert invalida.status_code == 401
+    assert inativa.json() == invalida.json() == {"detail": "E-mail ou senha inválidos."}
 
 
 @pytest.mark.django_db

@@ -51,10 +51,13 @@ class LoginView(APIView):
             )
             return Response({"detail": "E-mail ou senha inválidos."}, status=401)
         if not usuario.is_active:
-            return Response(
-                {"detail": "Esta conta está desativada. Procure o administrador."},
-                status=403,
+            registrar_auditoria(
+                usuario=usuario,
+                acao="login_falhou",
+                detalhes={"motivo": "conta_inativa"},
+                request=request,
             )
+            return Response({"detail": "E-mail ou senha inválidos."}, status=401)
         if usuario.instituicao_id:
             instituicao = Instituicao.objects.get(pk=usuario.instituicao_id)
             if instituicao.status_assinatura == Instituicao.StatusAssinatura.SUSPENSA:
