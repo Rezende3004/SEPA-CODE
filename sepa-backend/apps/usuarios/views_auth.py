@@ -13,6 +13,7 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.instituicoes.models import Instituicao
+from apps.usuarios.models import Usuario
 from apps.usuarios.serializers import CadastroSerializer, SessaoUsuarioSerializer
 from apps.usuarios.services import cadastrar_usuario
 from common.services import registrar_auditoria
@@ -105,6 +106,19 @@ class RegisterView(APIView):
         serializer = CadastroSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usuario = cadastrar_usuario(serializer.validated_data, request=request)
+        if usuario.tipo_usuario == Usuario.TipoUsuario.PROFISSIONAL:
+            # Contas de profissionais ficam pendentes até a ativação por um administrador.
+            return Response(
+                {
+                    "usuario": SessaoUsuarioSerializer(usuario, context={"request": request}).data,
+                    "pendente": True,
+                    "detail": (
+                        "Cadastro recebido. A conta de profissional será ativada "
+                        "por um administrador da instituição."
+                    ),
+                },
+                status=status.HTTP_201_CREATED,
+            )
         dados = tokens_para(usuario)
         dados["usuario"] = SessaoUsuarioSerializer(usuario, context={"request": request}).data
         return Response(dados, status=status.HTTP_201_CREATED)

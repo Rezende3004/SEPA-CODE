@@ -68,9 +68,11 @@ export function AuthProvider({
 
   const cadastrar = useCallback(
     async (dados: DadosCadastro) => {
-      const sessao = await cadastrarApi(dados);
-      definirUsuario(sessao);
-      return sessao;
+      const resultado = await cadastrarApi(dados);
+      if (!resultado.pendente) {
+        definirUsuario(resultado.usuario);
+      }
+      return resultado;
     },
     [definirUsuario],
   );

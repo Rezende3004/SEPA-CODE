@@ -66,7 +66,7 @@ export const authHandlers = [
       return respostaErro('E-mail ou senha inválidos.', 401);
     }
     if (!usuario.ativo) {
-      return respostaErro('Esta conta está desativada. Procure o administrador.', 403);
+      return respostaErro('E-mail ou senha inválidos.', 401);
     }
     if (usuario.instituicaoId) {
       const instituicao = db.instituicoes.find((item) => item.id === usuario.instituicaoId);
@@ -144,7 +144,7 @@ export const authHandlers = [
       email,
       tipoUsuario: tipoUsuario as 'PROFISSIONAL' | 'RESPONSAVEL',
       instituicaoId,
-      ativo: true,
+      ativo: tipoUsuario !== 'PROFISSIONAL',
     };
 
     let novoUsuario: Usuario = base;
@@ -169,6 +169,17 @@ export const authHandlers = [
 
     db.usuarios.push(novoUsuario);
     db.credenciais[email] = senha;
+    if (novoUsuario.tipoUsuario === 'PROFISSIONAL') {
+      return HttpResponse.json(
+        {
+          usuario: montarSessao(novoUsuario),
+          pendente: true,
+          detail:
+            'Cadastro recebido. A conta de profissional será ativada por um administrador da instituição.',
+        },
+        { status: 201 },
+      );
+    }
     return respostaAutenticacao(novoUsuario, 201);
   }),
 

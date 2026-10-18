@@ -46,6 +46,7 @@ const PERFIS: { valor: PerfilCadastro; rotulo: string; descricao: string }[] = [
 export function RegisterForm() {
   const navigate = useNavigate();
   const [erro, setErro] = useState<string | null>(null);
+  const [pendente, setPendente] = useState<string | null>(null);
   const cadastro = useCadastro();
   const instituicoes = useInstituicoesPublicas();
   const {
@@ -72,9 +73,17 @@ export function RegisterForm() {
 
   async function aoEnviar(dados: DadosCadastro) {
     setErro(null);
+    setPendente(null);
     try {
-      const usuario = await cadastro.mutateAsync(dados);
-      navigate(destinoPorPerfil(usuario.tipoUsuario), { replace: true });
+      const resultado = await cadastro.mutateAsync(dados);
+      if (resultado.pendente) {
+        setPendente(
+          resultado.mensagem ??
+            'Cadastro recebido. Aguarde a ativação da conta por um administrador.',
+        );
+        return;
+      }
+      navigate(destinoPorPerfil(resultado.usuario.tipoUsuario), { replace: true });
     } catch (erroCadastro) {
       setErro(getApiErrorMessage(erroCadastro, 'Não foi possível concluir o cadastro.'));
     }
@@ -91,6 +100,14 @@ export function RegisterForm() {
       <CardContent>
         <form onSubmit={handleSubmit(aoEnviar)} noValidate className="space-y-5">
           {erro ? <Alert tom="perigo">{erro}</Alert> : null}
+          {pendente ? (
+            <Alert tom="sucesso" titulo="Cadastro aguardando ativação">
+              {pendente}{' '}
+              <Link to={rotas.login} className="font-semibold underline">
+                Ir para o login
+              </Link>
+            </Alert>
+          ) : null}
 
           <fieldset className="space-y-2">
             <legend className="text-sm font-semibold text-ink">Perfil de acesso</legend>

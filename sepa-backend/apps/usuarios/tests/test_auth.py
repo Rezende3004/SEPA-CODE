@@ -104,9 +104,72 @@ def test_cadastro_profissional_e_login(instituicao_a):
         format="json",
     )
     assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["pendente"] is True
+    assert "access" not in corpo
     usuario = Usuario.objects.get(email="nova.profissional@teste.exemplo")
     assert usuario.tipo_usuario == Usuario.TipoUsuario.PROFISSIONAL
+    assert usuario.is_active is False
     assert Profissional.objects.filter(usuario=usuario).exists()
+    assert login(APIClient(), usuario.email).status_code == 401
+
+
+@pytest.mark.django_db
+def test_profissional_inativo_nao_acessa_nem_com_token(instituicao_a):
+    from rest_framework_simplejwt.tokens import RefreshToken
+
+    client = APIClient()
+    resposta = client.post(
+        "/api/auth/register/",
+        {
+            "nome": "Profissional Pendente",
+            "email": "pendente@teste.exemplo",
+            "senha": SENHA,
+            "tipoUsuario": "PROFISSIONAL",
+            "instituicaoId": instituicao_a.id,
+            "especialidade": "PSICOLOGO",
+            "registroProfissional": "CRP 0/0000",
+        },
+        format="json",
+    )
+    assert resposta.status_code == 201
+    usuario = Usuario.objects.get(email="pendente@teste.exemplo")
+    assert usuario.is_active is False
+
+    token = RefreshToken.for_user(usuario).access_token
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert client.get("/api/alunos/").status_code == 401
+    assert client.get("/api/atividades/").status_code == 401
+
+
+@pytest.mark.django_db
+def test_admin_ativa_profissional_cadastrado(instituicao_a, admin_user, autenticar):
+    resposta = APIClient().post(
+        "/api/auth/register/",
+        {
+            "nome": "Profissional Para Ativar",
+            "email": "ativar@teste.exemplo",
+            "senha": SENHA,
+            "tipoUsuario": "PROFISSIONAL",
+            "instituicaoId": instituicao_a.id,
+            "especialidade": "PEDAGOGO",
+            "registroProfissional": "MEC 123",
+        },
+        format="json",
+    )
+    assert resposta.status_code == 201
+    usuario = Usuario.objects.get(email="ativar@teste.exemplo")
+    assert usuario.is_active is False
+
+    admin_client = autenticar(admin_user)
+    ativacao = admin_client.patch(
+        f"/api/admin/profissionais/{usuario.pk}/",
+        {"ativo": True},
+        format="json",
+    )
+    assert ativacao.status_code == 200
+    usuario.refresh_from_db()
+    assert usuario.is_active is True
     assert login(APIClient(), usuario.email).status_code == 200
 
 

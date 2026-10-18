@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderizarComProviders } from '@/shared/test/render';
+import { tokenStore } from '@/shared/lib/token-store';
+import { cadastrar } from './api';
 import { LoginPage } from './pages/LoginPage';
 
 function montarRotas() {
@@ -36,5 +38,23 @@ describe('fluxo de login', () => {
     await usuario.click(screen.getByRole('button', { name: 'Entrar' }));
 
     expect(await screen.findByText('E-mail ou senha inválidos.')).toBeInTheDocument();
+  });
+
+  it('cadastro de profissional fica pendente e não inicia sessão', async () => {
+    tokenStore.clear();
+    const resultado = await cadastrar({
+      nome: 'Profissional Pendente',
+      email: 'pendente.front@sepa.exemplo',
+      senha: 'Sepa@2026',
+      confirmarSenha: 'Sepa@2026',
+      perfil: 'PSICOLOGO',
+      instituicaoId: 1,
+      telefone: '',
+      registroProfissional: 'CRP 00/0000',
+    });
+
+    expect(resultado.pendente).toBe(true);
+    expect(resultado.usuario.ativo).toBe(false);
+    expect(tokenStore.getAccess()).toBeNull();
   });
 });

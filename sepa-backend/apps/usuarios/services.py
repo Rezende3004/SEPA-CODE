@@ -5,7 +5,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from apps.instituicoes.models import Instituicao
 from apps.usuarios.models import Aluno, Profissional, Responsavel, Usuario
-from common.permissions import is_administrador, is_profissional
+from common.permissions import is_admin_global, is_administrador, is_profissional
 from common.services import registrar_auditoria
 
 SENHA_INICIAL_ALUNO = "Sepa@2026"
@@ -38,6 +38,7 @@ def cadastrar_usuario(dados: dict, request=None) -> Usuario:
         nome=dados["nome"].strip(),
         tipo_usuario=dados["tipo_usuario"],
         instituicao=instituicao,
+        is_active=dados["tipo_usuario"] != Usuario.TipoUsuario.PROFISSIONAL,
     )
     if usuario.tipo_usuario == Usuario.TipoUsuario.PROFISSIONAL:
         Profissional.objects.create(
