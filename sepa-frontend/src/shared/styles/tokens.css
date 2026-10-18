@@ -1,0 +1,17 @@
+/**
+ * Tokens que precisam existir em tempo de execução (escala de fonte do aluno).
+ * Cores, raios e sombras ficam em `tailwind.config.ts`.
+ */
+:root {
+  --sepa-font-scale: 1;
+  --sepa-touch-target: 48px;
+  --sepa-radius-card: 16px;
+}
+
+[data-tamanho-fonte='grande'] {
+  --sepa-font-scale: 1.12;
+}
+
+[data-tamanho-fonte='muito-grande'] {
+  --sepa-font-scale: 1.25;
+}
