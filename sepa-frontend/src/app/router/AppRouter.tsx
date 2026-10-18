@@ -7,6 +7,10 @@ import { AlunosPage } from '@/features/alunos/pages/AlunosPage';
 import { AlunoDetailPage } from '@/features/alunos/pages/AlunoDetailPage';
 import { CatalogoPage } from '@/features/atividades/pages/CatalogoPage';
 import { PlanoDetailPage } from '@/features/planos/pages/PlanoDetailPage';
+import { AlunoLayout } from '@/app/layouts/AlunoLayout';
+import { AlunoHomePage } from '@/features/execucao/pages/AlunoHomePage';
+import { ExecutarAtividadePage } from '@/features/execucao/pages/ExecutarAtividadePage';
+import { PreferenciasPage } from '@/features/execucao/pages/PreferenciasPage';
 import { DashboardLayout } from '@/app/layouts/DashboardLayout';
 import { PublicLayout } from '@/app/layouts/PublicLayout';
 import { ForbiddenPage } from '@/app/pages/ForbiddenPage';
@@ -54,16 +58,10 @@ export function AppRouter() {
         </Route>
 
         <Route element={<RequireRole perfis={['ALUNO']} />}>
-          <Route element={<DashboardLayout />}>
-            <Route
-              path={rotas.aluno.raiz}
-              element={
-                <PainelPlaceholder
-                  titulo="Minhas atividades"
-                  descricao="Atividades atribuídas ao aluno, com execução guiada e acessível."
-                />
-              }
-            />
+          <Route element={<AlunoLayout />}>
+            <Route path={rotas.aluno.raiz} element={<AlunoHomePage />} />
+            <Route path="/aluno/atividades/:atividadeId" element={<ExecutarAtividadePage />} />
+            <Route path={rotas.aluno.preferencias} element={<PreferenciasPage />} />
           </Route>
         </Route>
 
