@@ -22,15 +22,18 @@ import { AlunoFormModal } from '../components/AlunoFormModal';
 import { AlunoResumoCard } from '../components/AlunosTable';
 import { useAlunos } from '../hooks';
 import { usePlanos } from '@/features/planos/hooks';
+import { useRecomendacoes } from '@/features/recomendacoes/hooks';
 
 export function ProfissionalDashboardPage() {
   const { usuario } = useAuth();
   const alunos = useAlunos();
   const planos = usePlanos();
+  const recomendacoes = useRecomendacoes({ status: 'PENDENTE' });
   const [modalAberto, setModalAberto] = useState(false);
 
   const lista = alunos.data ?? [];
   const emAtencao = lista.filter((aluno) => aluno.tendencia === 'ESTAGNACAO');
+  const pendentes = (recomendacoes.data ?? []).length;
   const mediaGeral =
     lista.length > 0 ? lista.reduce((soma, aluno) => soma + aluno.mediaRecente, 0) / lista.length : 0;
 
@@ -47,6 +50,12 @@ export function ProfissionalDashboardPage() {
       valor: `${(planos.data ?? []).length}`,
       icone: ClipboardList,
       tom: 'primario',
+    },
+    {
+      rotulo: 'Recomendações pendentes',
+      valor: `${pendentes}`,
+      icone: Sparkles,
+      tom: 'atencao',
     },
     {
       rotulo: 'Média geral recente',
@@ -93,7 +102,7 @@ export function ProfissionalDashboardPage() {
             <h2 id="indicadores-titulo" className="sr-only">
               Indicadores
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {indicadores.map(({ rotulo, valor, icone: Icone, tom }) => (
                 <Card key={rotulo}>
                   <CardContent className="flex items-center gap-3 pt-5">

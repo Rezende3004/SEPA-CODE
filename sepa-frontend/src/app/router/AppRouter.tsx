@@ -15,6 +15,7 @@ import { RelatoriosPage } from '@/features/relatorios/pages/RelatoriosPage';
 import { RelatorioAlunoPage } from '@/features/relatorios/pages/RelatorioAlunoPage';
 import { ResponsavelHomePage } from '@/features/responsavel/pages/ResponsavelHomePage';
 import { FilhoDetailPage } from '@/features/responsavel/pages/FilhoDetailPage';
+import { RecomendacoesPage } from '@/features/recomendacoes/pages/RecomendacoesPage';
 import { DashboardLayout } from '@/app/layouts/DashboardLayout';
 import { PublicLayout } from '@/app/layouts/PublicLayout';
 import { ForbiddenPage } from '@/app/pages/ForbiddenPage';
@@ -60,6 +61,7 @@ export function AppRouter() {
             <Route path={rotas.profissional.atividades} element={<CatalogoPage />} />
             <Route path={rotas.profissional.relatorios} element={<RelatoriosPage />} />
             <Route path="/profissional/relatorios/:alunoId" element={<RelatorioAlunoPage />} />
+            <Route path={rotas.profissional.recomendacoes} element={<RecomendacoesPage />} />
           </Route>
         </Route>
 
