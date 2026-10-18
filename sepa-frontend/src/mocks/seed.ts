@@ -295,12 +295,54 @@ interface PerfilDesempenho {
 }
 
 const perfisDesempenho: Record<number, PerfilDesempenho> = {
-  11: { base: 64, crescimento: 2.1, jitter: 6, tentativas: [1, 2], probabilidadeAjuda: 0.2, tempo: [30, 70] },
-  12: { base: 49, crescimento: 0.2, jitter: 4, tentativas: [3, 4], probabilidadeAjuda: 0.55, tempo: [65, 120] },
-  13: { base: 56, crescimento: 3, jitter: 7, tentativas: [2, 3], probabilidadeAjuda: 0.25, tempo: [35, 80] },
-  14: { base: 65, crescimento: 0.1, jitter: 12, tentativas: [2, 3], probabilidadeAjuda: 0.3, tempo: [45, 95] },
-  15: { base: 67, crescimento: 1.5, jitter: 6, tentativas: [1, 2], probabilidadeAjuda: 0.18, tempo: [30, 65] },
-  16: { base: 72, crescimento: 1.7, jitter: 6, tentativas: [1, 2], probabilidadeAjuda: 0.12, tempo: [25, 60] },
+  11: {
+    base: 64,
+    crescimento: 2.1,
+    jitter: 6,
+    tentativas: [1, 2],
+    probabilidadeAjuda: 0.2,
+    tempo: [30, 70],
+  },
+  12: {
+    base: 49,
+    crescimento: 0.2,
+    jitter: 4,
+    tentativas: [3, 4],
+    probabilidadeAjuda: 0.55,
+    tempo: [65, 120],
+  },
+  13: {
+    base: 56,
+    crescimento: 3,
+    jitter: 7,
+    tentativas: [2, 3],
+    probabilidadeAjuda: 0.25,
+    tempo: [35, 80],
+  },
+  14: {
+    base: 65,
+    crescimento: 0.1,
+    jitter: 12,
+    tentativas: [2, 3],
+    probabilidadeAjuda: 0.3,
+    tempo: [45, 95],
+  },
+  15: {
+    base: 67,
+    crescimento: 1.5,
+    jitter: 6,
+    tentativas: [1, 2],
+    probabilidadeAjuda: 0.18,
+    tempo: [30, 65],
+  },
+  16: {
+    base: 72,
+    crescimento: 1.7,
+    jitter: 6,
+    tentativas: [1, 2],
+    probabilidadeAjuda: 0.12,
+    tempo: [25, 60],
+  },
 };
 
 const feedbacksPositivos = [
@@ -317,7 +359,10 @@ const feedbacksApoio = [
   'Cada passo conta. Vamos tentar mais uma vez com calma.',
 ];
 
-function criarHistorico(planos: PlanoDeAtendimento[], atividades: Atividade[]): HistoricoAtividade[] {
+function criarHistorico(
+  planos: PlanoDeAtendimento[],
+  atividades: Atividade[],
+): HistoricoAtividade[] {
   const random = criarRandom(2026);
   const historico: HistoricoAtividade[] = [];
   let id = 1;
@@ -337,7 +382,10 @@ function criarHistorico(planos: PlanoDeAtendimento[], atividades: Atividade[]): 
             perfil.base + perfil.crescimento * indiceSessao + variacao + ajusteNivel;
           const resultado = Math.round(limitar(resultadoBruto, 30, 98));
           const tentativas = inteiroEntre(random, perfil.tentativas[0], perfil.tentativas[1]);
-          const probabilidadeAjuda = Math.max(0.05, perfil.probabilidadeAjuda - indiceSessao * 0.015);
+          const probabilidadeAjuda = Math.max(
+            0.05,
+            perfil.probabilidadeAjuda - indiceSessao * 0.015,
+          );
           const pediuAjuda = random() < probabilidadeAjuda;
           const feedback =
             resultado >= 80
@@ -526,19 +574,42 @@ function criarRecomendacoes(analises: AnaliseAprendizado[]): RecomendacaoIA[] {
 }
 
 function criarMensagens(): Mensagem[] {
-  const definicoes: [remetente: number, destinatario: number, texto: string, dias: number, lida: boolean][] =
+  const definicoes: [
+    remetente: number,
+    destinatario: number,
+    texto: string,
+    dias: number,
+    lida: boolean,
+  ][] = [
+    [6, 2, 'Olá, Ana! O Lucas comentou que gostou muito da atividade dos animais.', 4, true],
+    [2, 6, 'Que ótima notícia, Mariana! Ele foi muito bem na associação de palavras.', 4, true],
     [
-      [6, 2, 'Olá, Ana! O Lucas comentou que gostou muito da atividade dos animais.', 4, true],
-      [2, 6, 'Que ótima notícia, Mariana! Ele foi muito bem na associação de palavras.', 4, true],
-      [2, 6, 'Esta semana vamos trabalhar a rotina da manhã. Se puder, retome os passos em casa.', 2, true],
-      [6, 2, 'Combinado! Vamos praticar depois do café da manhã.', 2, true],
-      [6, 2, 'Ana, o Lucas pediu para fazer a atividade do oceano de novo. Dá para incluir?', 1, false],
-      [6, 3, 'Bruno, a Helena tem ficado cansada nas sessões da tarde. Podemos ajustar o horário?', 3, true],
-      [3, 6, 'Claro! Vou conversar com a equipe e te retorno ainda esta semana.', 2, true],
-      [8, 5, 'Diego, o Miguel está animado com as atividades de sequência.', 2, true],
-      [5, 8, 'Fico feliz! Ele está pronto para um nível um pouco maior.', 1, false],
-      [9, 3, 'Boa tarde, Bruno! A Sofia quer continuar praticando em casa.', 1, false],
-    ];
+      2,
+      6,
+      'Esta semana vamos trabalhar a rotina da manhã. Se puder, retome os passos em casa.',
+      2,
+      true,
+    ],
+    [6, 2, 'Combinado! Vamos praticar depois do café da manhã.', 2, true],
+    [
+      6,
+      2,
+      'Ana, o Lucas pediu para fazer a atividade do oceano de novo. Dá para incluir?',
+      1,
+      false,
+    ],
+    [
+      6,
+      3,
+      'Bruno, a Helena tem ficado cansada nas sessões da tarde. Podemos ajustar o horário?',
+      3,
+      true,
+    ],
+    [3, 6, 'Claro! Vou conversar com a equipe e te retorno ainda esta semana.', 2, true],
+    [8, 5, 'Diego, o Miguel está animado com as atividades de sequência.', 2, true],
+    [5, 8, 'Fico feliz! Ele está pronto para um nível um pouco maior.', 1, false],
+    [9, 3, 'Boa tarde, Bruno! A Sofia quer continuar praticando em casa.', 1, false],
+  ];
 
   return definicoes
     .map(([remetenteId, destinatarioId, conteudoTexto, dias, lida], indice) => ({
@@ -693,7 +764,8 @@ export function criarBanco(): Banco {
       id: 4,
       nomePlano: 'Regulação e participação — Sofia',
       dataInicio: dataHora(50).slice(0, 10),
-      objetivos: 'Fortalecer participação nas atividades, respeitando os dias de maior sensibilidade.',
+      objetivos:
+        'Fortalecer participação nas atividades, respeitando os dias de maior sensibilidade.',
       profissionalId: 3,
       alunoId: 14,
       atividadeIds: [3, 5, 8, 9],
@@ -751,4 +823,3 @@ export function criarBanco(): Banco {
 }
 
 export const SENHA_DEMONSTRACAO = SENHA_SEED;
-export const USUARIO_ADMIN_ID = 1;

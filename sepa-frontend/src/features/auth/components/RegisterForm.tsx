@@ -5,7 +5,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import { Alert } from '@/shared/components/ui/Alert';
 import { Button } from '@/shared/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/Card';
 import { Field } from '@/shared/components/ui/Field';
 import { Input } from '@/shared/components/ui/Input';
 import { Select } from '@/shared/components/ui/Select';
@@ -120,6 +126,7 @@ export function RegisterForm() {
                 id="nome"
                 autoComplete="name"
                 invalido={Boolean(errors.nome)}
+                aria-describedby={errors.nome ? 'nome-erro' : undefined}
                 {...register('nome')}
               />
             </Field>
@@ -129,6 +136,7 @@ export function RegisterForm() {
                 type="email"
                 autoComplete="email"
                 invalido={Boolean(errors.email)}
+                aria-describedby={errors.email ? 'email-erro' : undefined}
                 {...register('email')}
               />
             </Field>
@@ -145,6 +153,7 @@ export function RegisterForm() {
               id="instituicaoId"
               invalido={Boolean(errors.instituicaoId)}
               disabled={instituicoes.isLoading}
+              aria-describedby={errors.instituicaoId ? 'instituicaoId-erro' : undefined}
               {...register('instituicaoId', { valueAsNumber: true })}
             >
               <option value={0}>
@@ -169,6 +178,7 @@ export function RegisterForm() {
                 autoComplete="tel"
                 placeholder="(31) 99999-0000"
                 invalido={Boolean(errors.telefone)}
+                aria-describedby={errors.telefone ? 'telefone-erro' : undefined}
                 {...register('telefone')}
               />
             </Field>
@@ -183,6 +193,9 @@ export function RegisterForm() {
               <Input
                 id="registroProfissional"
                 invalido={Boolean(errors.registroProfissional)}
+                aria-describedby={
+                  errors.registroProfissional ? 'registroProfissional-erro' : undefined
+                }
                 {...register('registroProfissional')}
               />
             </Field>
@@ -195,6 +208,7 @@ export function RegisterForm() {
                 type="password"
                 autoComplete="new-password"
                 invalido={Boolean(errors.senha)}
+                aria-describedby={errors.senha ? 'senha-erro' : undefined}
                 {...register('senha')}
               />
             </Field>
@@ -209,6 +223,7 @@ export function RegisterForm() {
                 type="password"
                 autoComplete="new-password"
                 invalido={Boolean(errors.confirmarSenha)}
+                aria-describedby={errors.confirmarSenha ? 'confirmarSenha-erro' : undefined}
                 {...register('confirmarSenha')}
               />
             </Field>

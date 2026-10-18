@@ -1,3 +1,4 @@
+// RF-002 / RF-003 — plano de atendimento e associação de atividades.
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Pencil, Plus, Trash2, UserRound } from 'lucide-react';
@@ -123,11 +124,7 @@ export function PlanoDetailPage() {
         onFechar={() => setEditando(false)}
       />
       {adicionando ? (
-        <SeletorAtividades
-          aberto
-          plano={dados}
-          onFechar={() => setAdicionando(false)}
-        />
+        <SeletorAtividades aberto plano={dados} onFechar={() => setAdicionando(false)} />
       ) : null}
       <ConfirmDialog
         aberto={confirmandoExclusao}

@@ -1,3 +1,4 @@
+// RF-001 — autenticação, restauração de sessão e logout.
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { SESSION_EXPIRED_EVENT } from '@/shared/lib/api-client';
 import { queryClient } from '@/shared/lib/query-client';
@@ -49,6 +50,7 @@ export function AuthProvider({
 
   useEffect(() => {
     function aoExpirarSessao() {
+      queryClient.clear();
       definirUsuario(null);
     }
     window.addEventListener(SESSION_EXPIRED_EVENT, aoExpirarSessao);

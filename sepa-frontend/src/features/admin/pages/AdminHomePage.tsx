@@ -1,3 +1,4 @@
+// RF-010 — visão geral do administrador.
 import { Link } from 'react-router-dom';
 import { Building2, Power, Users } from 'lucide-react';
 import { Card, CardContent } from '@/shared/components/ui/Card';

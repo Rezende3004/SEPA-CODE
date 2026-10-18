@@ -14,7 +14,7 @@ export function Explicabilidade({ fatores }: ExplicabilidadeProps) {
 
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-semibold text-ink">Por que a IA sugeriu isso?</h4>
+      <h3 className="text-sm font-semibold text-ink">Por que a IA sugeriu isso?</h3>
       <ul className="space-y-3">
         {fatores.map((fator) => (
           <li key={fator.metrica} className="space-y-1">

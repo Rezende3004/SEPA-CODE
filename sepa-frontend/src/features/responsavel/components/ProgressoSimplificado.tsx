@@ -1,5 +1,11 @@
 import type { DesempenhoPorAtividade, ResumoDesempenho, Tendencia } from '@/shared/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/Card';
 import { ProgressBar } from '@/shared/components/ui/ProgressBar';
 import { formatarPercentual } from '@/shared/lib/format';
 
@@ -73,9 +79,7 @@ export function ProgressoSimplificado({ nome, resumo, atividades }: ProgressoSim
       <Card>
         <CardHeader>
           <CardTitle>O que estamos praticando</CardTitle>
-          <CardDescription>
-            Mesma atividade, com o título que aparece para o aluno.
-          </CardDescription>
+          <CardDescription>Mesma atividade, com o título que aparece para o aluno.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-3">

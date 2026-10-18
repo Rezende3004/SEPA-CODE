@@ -1,6 +1,16 @@
+// RF-002 — detalhe do aluno e seus planos.
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarDays, ClipboardList, LineChart, Mail, MessageSquare, Plus, UserRound } from 'lucide-react';
+import {
+  ArrowLeft,
+  CalendarDays,
+  ClipboardList,
+  LineChart,
+  Mail,
+  MessageSquare,
+  Plus,
+  UserRound,
+} from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { Button } from '@/shared/components/ui/Button';
 import { Card, CardContent } from '@/shared/components/ui/Card';
@@ -89,7 +99,9 @@ export function AlunoDetailPage() {
               <p className="mt-1 text-xl font-bold text-ink">
                 {calcularIdade(dados.dataNascimento)} anos
               </p>
-              <p className="text-xs text-muted">Nascimento em {formatarData(dados.dataNascimento)}</p>
+              <p className="text-xs text-muted">
+                Nascimento em {formatarData(dados.dataNascimento)}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -163,11 +175,7 @@ export function AlunoDetailPage() {
         ) : null}
       </section>
 
-      <PlanoFormModal
-        aberto={modalPlano}
-        alunoId={id}
-        onFechar={() => setModalPlano(false)}
-      />
+      <PlanoFormModal aberto={modalPlano} alunoId={id} onFechar={() => setModalPlano(false)} />
     </div>
   );
 }

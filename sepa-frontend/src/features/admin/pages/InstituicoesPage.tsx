@@ -1,3 +1,4 @@
+// RF-010 — gestão do status de assinatura das instituições.
 import { Building2 } from 'lucide-react';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
 import { ErrorState } from '@/shared/components/ui/ErrorState';

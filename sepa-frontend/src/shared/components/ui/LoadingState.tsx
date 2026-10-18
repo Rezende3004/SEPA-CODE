@@ -26,7 +26,7 @@ export function LoadingState({
             key={indice}
             aria-hidden="true"
             className={cn(
-              'animate-pulse rounded-xl border border-line bg-surface',
+              'rounded-xl border border-line bg-surface',
               variante === 'cards' ? 'h-40 p-5' : 'h-14',
             )}
           >

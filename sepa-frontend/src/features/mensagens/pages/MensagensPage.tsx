@@ -1,3 +1,4 @@
+// RF-007 — lista de conversas e envio com polling.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
@@ -11,12 +12,7 @@ import { getApiErrorMessage } from '@/shared/lib/api-client';
 import { cn } from '@/shared/lib/cn';
 import { JanelaConversa } from '../components/JanelaConversa';
 import { ListaConversas } from '../components/ListaConversas';
-import {
-  useEnviarMensagem,
-  useMarcarMensagemLida,
-  useMensagens,
-  useUsuarioResumo,
-} from '../hooks';
+import { useEnviarMensagem, useMarcarMensagemLida, useMensagens, useUsuarioResumo } from '../hooks';
 
 interface MensagensPageProps {
   basePath: string;
@@ -26,7 +22,7 @@ export function MensagensPage({ basePath }: MensagensPageProps) {
   const { usuario } = useAuth();
   const navigate = useNavigate();
   const { usuarioId } = useParams();
-  const contatoId = usuarioId ? Number(usuarioId) : undefined;
+  const contatoId = usuarioId && Number.isFinite(Number(usuarioId)) ? Number(usuarioId) : undefined;
 
   const todas = useMensagens();
   const conversa = useMensagens(contatoId);
@@ -40,8 +36,10 @@ export function MensagensPage({ basePath }: MensagensPageProps) {
   const conversas = useMemo<ConversaResumo[]>(() => {
     const mapa = new Map<number, ConversaResumo>();
     for (const mensagem of todas.data ?? []) {
-      const outroId = mensagem.remetenteId === meuId ? mensagem.destinatarioId : mensagem.remetenteId;
-      const nome = mensagem.remetenteId === outroId ? mensagem.remetenteNome : mensagem.destinatarioNome;
+      const outroId =
+        mensagem.remetenteId === meuId ? mensagem.destinatarioId : mensagem.remetenteId;
+      const nome =
+        mensagem.remetenteId === outroId ? mensagem.remetenteNome : mensagem.destinatarioNome;
       const atual = mapa.get(outroId);
       const naoLida = mensagem.destinatarioId === meuId && !mensagem.lida ? 1 : 0;
       if (atual) {

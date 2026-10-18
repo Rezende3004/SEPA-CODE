@@ -16,9 +16,7 @@ export function InstituicoesTable({ instituicoes }: { instituicoes: Instituicao[
 
   return (
     <div className="space-y-3">
-      {atualizar.isError ? (
-        <Alert tom="perigo">{getApiErrorMessage(atualizar.error)}</Alert>
-      ) : null}
+      {atualizar.isError ? <Alert tom="perigo">{getApiErrorMessage(atualizar.error)}</Alert> : null}
       <div className="overflow-x-auto rounded-xl border border-line bg-surface">
         <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
           <caption className="sr-only">Instituições e status de assinatura</caption>
@@ -43,8 +41,7 @@ export function InstituicoesTable({ instituicoes }: { instituicoes: Instituicao[
           </thead>
           <tbody>
             {instituicoes.map((instituicao) => {
-              const salvando =
-                atualizar.isPending && atualizar.variables?.id === instituicao.id;
+              const salvando = atualizar.isPending && atualizar.variables?.id === instituicao.id;
               return (
                 <tr key={instituicao.id} className="border-t border-line/70">
                   <td className="px-4 py-3 font-semibold text-ink">{instituicao.nomeFantasia}</td>

@@ -17,22 +17,29 @@ const formatadorMesCurto = new Intl.DateTimeFormat('pt-BR', {
   month: 'short',
 });
 
+function interpretarData(iso: string): Date {
+  // Datas puras (YYYY-MM-DD) são interpretadas ao meio-dia local para não
+  // deslocar o dia ao formatar em fusos negativos.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return new Date(`${iso}T12:00:00`);
+  return new Date(iso);
+}
+
 export function formatarData(iso: string | null | undefined): string {
   if (!iso) return '—';
-  const data = new Date(iso);
+  const data = interpretarData(iso);
   if (Number.isNaN(data.getTime())) return '—';
   return formatadorData.format(data);
 }
 
 export function formatarDataHora(iso: string | null | undefined): string {
   if (!iso) return '—';
-  const data = new Date(iso);
+  const data = interpretarData(iso);
   if (Number.isNaN(data.getTime())) return '—';
   return formatadorDataHora.format(data);
 }
 
 export function formatarDataCurta(iso: string): string {
-  const data = new Date(iso);
+  const data = interpretarData(iso);
   if (Number.isNaN(data.getTime())) return '—';
   return formatadorMesCurto.format(data).replace('.', '');
 }
@@ -42,7 +49,7 @@ export function formatarPercentual(valor: number): string {
 }
 
 export function calcularIdade(dataNascimento: string): number {
-  const nascimento = new Date(dataNascimento);
+  const nascimento = interpretarData(dataNascimento);
   if (Number.isNaN(nascimento.getTime())) return 0;
   const hoje = new Date();
   let idade = hoje.getFullYear() - nascimento.getFullYear();

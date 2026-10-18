@@ -56,19 +56,3 @@ export function classificarTendencia(coeficiente: number): Tendencia {
   if (coeficiente <= -1) return 'REGRESSAO';
   return 'ESTAGNACAO';
 }
-
-export function desvioPadrao(valores: readonly number[]): number {
-  if (valores.length === 0) return 0;
-  const mediaValores = media(valores);
-  const variancia =
-    valores.reduce((soma, valor) => soma + (valor - mediaValores) ** 2, 0) / valores.length;
-  return Math.sqrt(variancia);
-}
-
-export function variacaoPercentual(valores: readonly number[]): number {
-  if (valores.length < 2) return 0;
-  const primeiro = valores[0];
-  const ultimo = valores[valores.length - 1];
-  if (primeiro === 0) return 0;
-  return ((ultimo - primeiro) / primeiro) * 100;
-}

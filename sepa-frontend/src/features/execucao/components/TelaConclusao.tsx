@@ -28,7 +28,9 @@ export function TelaConclusao({
         <Trophy aria-hidden="true" className="size-10" />
       </div>
       <div>
-        <h1 className="text-2xl font-bold text-kid-muted sm:text-3xl">Muito bem! Atividade concluída.</h1>
+        <h1 className="text-2xl font-bold text-kid-muted sm:text-3xl">
+          Muito bem! Atividade concluída.
+        </h1>
         <p className="mt-2 text-base text-kid-muted">
           Você terminou com <strong className="text-kid-primary">{resultado.resultado}%</strong> de
           acerto. Cada tentativa mostra o seu esforço.
@@ -45,9 +47,7 @@ export function TelaConclusao({
             key={indice}
             aria-hidden="true"
             className={
-              indice < estrelas
-                ? 'size-9 fill-secondary text-secondary'
-                : 'size-9 text-line'
+              indice < estrelas ? 'size-9 fill-secondary text-secondary' : 'size-9 text-line'
             }
           />
         ))}
@@ -64,7 +64,9 @@ export function TelaConclusao({
         </div>
         <div className="rounded-lg bg-kid-soft/60 p-3">
           <dt className="text-xs text-kid-muted">Pediu ajuda</dt>
-          <dd className="text-lg font-bold text-kid-muted">{resultado.pediuAjuda ? 'Sim' : 'Não'}</dd>
+          <dd className="text-lg font-bold text-kid-muted">
+            {resultado.pediuAjuda ? 'Sim' : 'Não'}
+          </dd>
         </div>
       </dl>
 

@@ -1,3 +1,4 @@
+// RF-001 — guarda de rotas por perfil.
 import type { ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { LoadingState } from '@/shared/components/ui/LoadingState';

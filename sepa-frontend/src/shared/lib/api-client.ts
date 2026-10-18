@@ -40,7 +40,9 @@ apiClient.interceptors.response.use(
     const config = erro.config as ConfigComRetry | undefined;
     const url = config?.url ?? '';
     const ehRotaDeAutenticacao =
-      url.includes('/auth/login/') || url.includes('/auth/refresh/') || url.includes('/auth/register/');
+      url.includes('/auth/login/') ||
+      url.includes('/auth/refresh/') ||
+      url.includes('/auth/register/');
 
     if (erro.response?.status !== 401 || !config || config._retry || ehRotaDeAutenticacao) {
       return Promise.reject(erro);

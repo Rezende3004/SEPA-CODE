@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { resetDb } from '@/mocks/db';
+import { limparCachePreferencias } from '@/features/execucao/hooks/use-sensory-preferences';
 import { tokenStore } from '@/shared/lib/token-store';
 import { server } from './msw-server';
 
@@ -11,6 +12,7 @@ afterEach(() => {
   cleanup();
   server.resetHandlers();
   resetDb();
+  limparCachePreferencias();
   tokenStore.clear();
   sessionStorage.clear();
   localStorage.clear();

@@ -19,10 +19,7 @@ export async function criarPlano(alunoId: number, dados: DadosPlano): Promise<Pl
   return data;
 }
 
-export async function atualizarPlano(
-  planoId: number,
-  dados: DadosPlano,
-): Promise<PlanoDetalhado> {
+export async function atualizarPlano(planoId: number, dados: DadosPlano): Promise<PlanoDetalhado> {
   const { data } = await apiClient.patch<PlanoDetalhado>(`/planos/${planoId}/`, dados);
   return data;
 }

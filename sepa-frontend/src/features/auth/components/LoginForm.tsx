@@ -5,7 +5,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { Alert } from '@/shared/components/ui/Alert';
 import { Button } from '@/shared/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/Card';
 import { Field } from '@/shared/components/ui/Field';
 import { Input } from '@/shared/components/ui/Input';
 import { getApiErrorMessage } from '@/shared/lib/api-client';
@@ -75,6 +81,7 @@ export function LoginForm() {
                 autoComplete="email"
                 placeholder="voce@instituicao.exemplo"
                 invalido={Boolean(errors.email)}
+                aria-describedby={errors.email ? 'email-erro' : undefined}
                 {...register('email')}
               />
             </Field>
@@ -86,6 +93,7 @@ export function LoginForm() {
                 autoComplete="current-password"
                 placeholder="Sua senha"
                 invalido={Boolean(errors.senha)}
+                aria-describedby={errors.senha ? 'senha-erro' : undefined}
                 {...register('senha')}
               />
             </Field>

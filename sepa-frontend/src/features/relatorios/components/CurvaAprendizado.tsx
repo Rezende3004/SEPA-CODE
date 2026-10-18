@@ -48,7 +48,10 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
             />
             <YAxis domain={[0, 100]} fontSize={12} stroke="#566873" unit="%" />
             <Tooltip
-              formatter={(valor, nome) => [`${Number(valor).toFixed(1)}%`, rotulos[String(nome)] ?? String(nome)]}
+              formatter={(valor, nome) => [
+                `${Number(valor).toFixed(1)}%`,
+                rotulos[String(nome)] ?? String(nome),
+              ]}
               labelFormatter={(valor) => formatarDataHora(String(valor))}
             />
             <Legend formatter={(valor) => rotulos[String(valor)] ?? String(valor)} />
@@ -59,6 +62,7 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
               stroke="#2A6F97"
               strokeWidth={2}
               dot={{ r: 3 }}
+              isAnimationActive={false}
             />
             <Line
               type="monotone"
@@ -68,6 +72,7 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
               strokeWidth={2}
               strokeDasharray="6 4"
               dot={false}
+              isAnimationActive={false}
             />
             <Line
               type="monotone"
@@ -77,6 +82,7 @@ export function CurvaAprendizado({ titulo, pontos }: CurvaAprendizadoProps) {
               strokeWidth={2}
               strokeDasharray="2 3"
               dot={false}
+              isAnimationActive={false}
             />
           </LineChart>
         </ResponsiveContainer>

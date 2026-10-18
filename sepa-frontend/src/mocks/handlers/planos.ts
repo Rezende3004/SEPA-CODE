@@ -199,9 +199,7 @@ export const planosHandlers = [
     if (sessao.tipoUsuario !== 'PROFISSIONAL' || !podeGerenciarPlano(sessao, plano, aluno)) {
       return semPermissao();
     }
-    plano.atividadeIds = plano.atividadeIds.filter(
-      (id) => id !== Number(params.atividadeId),
-    );
+    plano.atividadeIds = plano.atividadeIds.filter((id) => id !== Number(params.atividadeId));
     return new HttpResponse(null, { status: 204 });
   }),
 ];

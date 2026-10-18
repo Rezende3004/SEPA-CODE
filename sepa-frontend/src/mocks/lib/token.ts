@@ -3,7 +3,6 @@ import type { TipoUsuario } from '@/shared/types';
 const SEGREDO = 'sepa-mock-signature';
 export const ACCESS_TTL_SEGUNDOS = 120;
 export const REFRESH_TTL_SEGUNDOS = 8 * 60 * 60;
-
 export interface PayloadToken {
   sub: number;
   email: string;
@@ -88,16 +87,6 @@ export function decodificarToken(token: string): PayloadToken | null {
     const payload = JSON.parse(deBase64Url(corpo)) as PayloadToken;
     if (payload.exp * 1000 <= Date.now()) return null;
     return payload;
-  } catch {
-    return null;
-  }
-}
-
-export function lerTokenSemValidade(token: string): PayloadToken | null {
-  const partes = token.split('.');
-  if (partes.length !== 3) return null;
-  try {
-    return JSON.parse(deBase64Url(partes[1])) as PayloadToken;
   } catch {
     return null;
   }

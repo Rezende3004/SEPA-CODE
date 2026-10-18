@@ -1,3 +1,4 @@
+// RF-006 — visão simplificada dos filhos vinculados.
 import { Users } from 'lucide-react';
 import { useAuth } from '@/features/auth/use-auth';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
@@ -5,12 +6,12 @@ import { LoadingState } from '@/shared/components/ui/LoadingState';
 import { ErrorState } from '@/shared/components/ui/ErrorState';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
 import { getApiErrorMessage } from '@/shared/lib/api-client';
-import { useAlunos } from '@/features/alunos/hooks';
 import { FilhoCard } from '../components/FilhoCard';
+import { useFilhos } from '../hooks';
 
 export function ResponsavelHomePage() {
   const { usuario } = useAuth();
-  const alunos = useAlunos();
+  const alunos = useFilhos();
 
   return (
     <div className="space-y-6">

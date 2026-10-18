@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Send } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button';
 import { Textarea } from '@/shared/components/ui/Textarea';
-import { mensagemSchema, type DadosMensagem } from '../api';
+import { mensagemSchema, type DadosMensagem } from '../schemas';
 
 interface ComposerMensagemProps {
   onEnviar: (texto: string) => Promise<void>;

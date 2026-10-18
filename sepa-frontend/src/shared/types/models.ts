@@ -1,9 +1,4 @@
-export const TIPOS_USUARIO = [
-  'PROFISSIONAL',
-  'ALUNO',
-  'RESPONSAVEL',
-  'ADMINISTRADOR',
-] as const;
+export const TIPOS_USUARIO = ['PROFISSIONAL', 'ALUNO', 'RESPONSAVEL', 'ADMINISTRADOR'] as const;
 export type TipoUsuario = (typeof TIPOS_USUARIO)[number];
 
 export const ESPECIALIDADES = ['PSICOLOGO', 'FONOAUDIOLOGO', 'PEDAGOGO'] as const;

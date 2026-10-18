@@ -1,3 +1,4 @@
+// RF-008 / RNF-004 — home do aluno com atividades atribuídas.
 import { ClipboardList } from 'lucide-react';
 import { useAuth } from '@/features/auth/use-auth';
 import { LoadingState } from '@/shared/components/ui/LoadingState';
@@ -15,7 +16,9 @@ export function AlunoHomePage() {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="text-sm font-semibold text-kid-primary">Olá, {usuario?.nome.split(' ')[0]}!</p>
+        <p className="text-sm font-semibold text-kid-primary">
+          Olá, {usuario?.nome.split(' ')[0]}!
+        </p>
         <h1 className="text-balance text-3xl font-bold text-kid-muted sm:text-4xl">
           O que vamos praticar hoje?
         </h1>

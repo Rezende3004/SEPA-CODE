@@ -50,8 +50,7 @@ export const semPermissao = () =>
 export const naoEncontrado = (recurso = 'Recurso') =>
   respostaErro(`${recurso} não encontrado.`, 404);
 
-export const somenteLeitura = () =>
-  respostaErro('Operação não permitida para este perfil.', 403);
+export const somenteLeitura = () => respostaErro('Operação não permitida para este perfil.', 403);
 
 export async function corpoJson(request: Request): Promise<Record<string, unknown>> {
   try {

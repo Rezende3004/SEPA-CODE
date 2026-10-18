@@ -1,3 +1,4 @@
+// RF-005 — seleção de aluno para o relatório analítico.
 import { Link } from 'react-router-dom';
 import { LineChart } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';

@@ -1,10 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  enviarMensagem,
-  listarMensagens,
-  marcarMensagemLida,
-  obterUsuarioResumo,
-} from './api';
+import { enviarMensagem, listarMensagens, marcarMensagemLida, obterUsuarioResumo } from './api';
 
 const INTERVALO_POLLING = 10_000;
 

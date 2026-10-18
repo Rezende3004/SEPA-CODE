@@ -53,18 +53,18 @@ componente → features/x/hooks.ts (React Query) → features/x/api.ts (Axios) �
 
 ## 5. Extensões de contrato (documentadas para o backend)
 
-| Extensão | Motivo |
-|---|---|
-| `Usuario.ativo` | RF-010 exige ativar/desativar contas de profissionais. |
-| `Usuario.instituicaoId` aceita `null` | Administrador da plataforma não pertence a uma instituição. |
-| `Atividade.itens: ItemAtividade[]` | O schema guarda apenas mídia; os dois motores jogáveis precisam do conteúdo (emoji, rótulo, dica). Sugestão para o Django: JSONField ou tabela de itens. |
-| `GET /api/responsaveis/` | Formulário de aluno precisa listar responsáveis da instituição. |
-| `GET /api/instituicoes/` (público) | Cadastro precisa escolher a instituição ativa. |
-| `POST /api/mensagens/:id/lida/` | Contrato original não previa marcação de leitura. |
-| `AlunoResumo.mediaRecente/tendencia` | Dashboard do profissional exibe alertas sem N+1 de relatórios. |
-| `/api/alunos/` para RESPONSAVEL | Retorna apenas os filhos vinculados ao responsável. |
-| `GET /api/planos/` inclui nomes e atividades | Evita múltiplas chamadas na tela de plano. |
-| `/api/relatorios/desempenho/` retorna resumo + série por atividade | Um único payload para KPIs, gráfico e alerta. |
+| Extensão                                                           | Motivo                                                                                                                                                   |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Usuario.ativo`                                                    | RF-010 exige ativar/desativar contas de profissionais.                                                                                                   |
+| `Usuario.instituicaoId` aceita `null`                              | Administrador da plataforma não pertence a uma instituição.                                                                                              |
+| `Atividade.itens: ItemAtividade[]`                                 | O schema guarda apenas mídia; os dois motores jogáveis precisam do conteúdo (emoji, rótulo, dica). Sugestão para o Django: JSONField ou tabela de itens. |
+| `GET /api/responsaveis/`                                           | Formulário de aluno precisa listar responsáveis da instituição.                                                                                          |
+| `GET /api/instituicoes/` (público)                                 | Cadastro precisa escolher a instituição ativa.                                                                                                           |
+| `POST /api/mensagens/:id/lida/`                                    | Contrato original não previa marcação de leitura.                                                                                                        |
+| `AlunoResumo.mediaRecente/tendencia`                               | Dashboard do profissional exibe alertas sem N+1 de relatórios.                                                                                           |
+| `/api/alunos/` para RESPONSAVEL                                    | Retorna apenas os filhos vinculados ao responsável.                                                                                                      |
+| `GET /api/planos/` inclui nomes e atividades                       | Evita múltiplas chamadas na tela de plano.                                                                                                               |
+| `/api/relatorios/desempenho/` retorna resumo + série por atividade | Um único payload para KPIs, gráfico e alerta.                                                                                                            |
 
 ## 6. Atividades jogáveis
 
@@ -119,3 +119,22 @@ componente → features/x/hooks.ts (React Query) → features/x/api.ts (Axios) �
 - Erros seguem o formato DRF (`detail` ou `{ campo: ["mensagem"] }`).
 - Toasts foram evitados: o Context API é exclusivo da sessão, então o feedback é inline com
   `Alert` e `aria-live`.
+
+## 11. Revisão final (etapa 8)
+
+- **Aceite de recomendação:** ao aceitar, o mock altera `nivelDificuldade` das atividades sugeridas
+  para `nivelSugerido` (clamp 1–5) e registra o status `ACEITA`. O backend do 6º período deve
+  reproduzir esse efeito e, idealmente, manter trilha de auditoria de quem aceitou e quando.
+- **Assinatura suspensa:** login de usuários vinculados a uma instituição `SUSPENSA` é bloqueado
+  com `403`, e novos cadastros também. O administrador pode reativar em `/admin/instituicoes`.
+- **Mensagens:** a lista completa (sem `?com=`) alimenta a lista de conversas; o frontend agrupa por
+  contraparte. A marcação de leitura é feita por mensagem no endpoint `POST /mensagens/:id/lida/`.
+- **Bundle:** o build separa `react-vendor`, `data-vendor` e `charts-vendor`, além do chunk do MSW
+  carregado sob demanda, para não penalizar o carregamento inicial.
+- **Testes:** além dos fluxos de UI, os handlers MSW são testados diretamente para RN-001 a RN-004 e
+  mensagens, garantindo que as regras vivam no “servidor” simulado.
+- **Acessibilidade:** a hierarquia de títulos foi revisada (um `h1` por página, seções em `h2`),
+  formulários ligam erros por `aria-describedby`, ícones decorativos usam `aria-hidden`, e o foco é
+  visível em todos os controles.
+- **Sem Figma:** a referência visual foi o gráfico do protótipo Python; essa limitação está
+  registrada na Seção 16 do relatório.

@@ -13,9 +13,7 @@ export function NotFoundPage() {
         <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary-soft text-primary">
           <Compass aria-hidden="true" className="size-7" />
         </div>
-        <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-primary">
-          Erro 404
-        </p>
+        <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-primary">Erro 404</p>
         <h1 className="mt-1 text-2xl font-bold text-ink">Página não encontrada</h1>
         <p className="mt-2 text-sm text-muted">
           O endereço acessado não existe ou foi movido. Use o botão abaixo para voltar.

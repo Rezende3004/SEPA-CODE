@@ -9,6 +9,7 @@ function useInvalidarRecomendacoes() {
     queryClient.invalidateQueries({ queryKey: ['atividades'] });
     queryClient.invalidateQueries({ queryKey: ['planos'] });
     queryClient.invalidateQueries({ queryKey: ['alunos'] });
+    queryClient.invalidateQueries({ queryKey: ['aluno-atividades'] });
   };
 }
 

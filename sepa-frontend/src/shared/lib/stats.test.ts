@@ -1,13 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  classificarTendencia,
-  desvioPadrao,
-  ewma,
-  media,
-  mediaMovel,
-  slope,
-  variacaoPercentual,
-} from './stats';
+import { classificarTendencia, ewma, media, mediaMovel, slope } from './stats';
 
 describe('media', () => {
   it('calcula a média e trata lista vazia', () => {
@@ -59,16 +51,5 @@ describe('classificarTendencia', () => {
     expect(classificarTendencia(1.5)).toBe('EVOLUCAO');
     expect(classificarTendencia(0.2)).toBe('ESTAGNACAO');
     expect(classificarTendencia(-1.2)).toBe('REGRESSAO');
-  });
-});
-
-describe('dispersão e variação', () => {
-  it('calcula desvio padrão populacional', () => {
-    expect(desvioPadrao([2, 4, 4, 4, 5, 5, 7, 9])).toBe(2);
-  });
-
-  it('calcula variação percentual entre primeiro e último', () => {
-    expect(variacaoPercentual([50, 60, 75])).toBe(50);
-    expect(variacaoPercentual([0, 10])).toBe(0);
   });
 });

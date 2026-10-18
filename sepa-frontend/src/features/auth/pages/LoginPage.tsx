@@ -1,3 +1,4 @@
+// RF-001 — login por perfil com contas de demonstração.
 import { Navigate } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/features/auth/use-auth';

@@ -5,23 +5,23 @@ Fonte de verdade: `tailwind.config.ts` (cores, raios, sombras, tipografia) e
 
 ## Paleta
 
-| Token | Hex | Uso |
-|---|---|---|
-| `canvas` | `#F7F5F0` | fundo geral (adultos) |
-| `surface` | `#FFFFFF` | cartões e superfícies |
-| `ink` | `#1F2D36` | texto principal |
-| `muted` | `#566873` | texto secundário |
-| `line` | `#DCE3E6` | bordas |
-| `primary` | `#2A6F97` | ação principal, links |
-| `primary.dark` | `#1F5675` | hover/ênfase |
-| `primary.soft` | `#E7F0F5` | fundos de destaque |
-| `secondary` | `#F4A261` | apoio, gráficos |
-| `accent` | `#E76F51` | atenção pontual |
-| `success` | `#4F8A6D` | acerto/evolução |
-| `warning` | `#A8641C` | estagnação/atenção |
-| `danger` | `#B4483C` | erro/exclusão |
-| `kid.canvas` | `#FBF8F3` | fundo do aluno |
-| `kid.primary` | `#2F6F7E` | ação do aluno |
+| Token          | Hex       | Uso                   |
+| -------------- | --------- | --------------------- |
+| `canvas`       | `#F7F5F0` | fundo geral (adultos) |
+| `surface`      | `#FFFFFF` | cartões e superfícies |
+| `ink`          | `#1F2D36` | texto principal       |
+| `muted`        | `#566873` | texto secundário      |
+| `line`         | `#DCE3E6` | bordas                |
+| `primary`      | `#2A6F97` | ação principal, links |
+| `primary.dark` | `#1F5675` | hover/ênfase          |
+| `primary.soft` | `#E7F0F5` | fundos de destaque    |
+| `secondary`    | `#F4A261` | apoio, gráficos       |
+| `accent`       | `#E76F51` | atenção pontual       |
+| `success`      | `#4F8A6D` | acerto/evolução       |
+| `warning`      | `#A8641C` | estagnação/atenção    |
+| `danger`       | `#B4483C` | erro/exclusão         |
+| `kid.canvas`   | `#FBF8F3` | fundo do aluno        |
+| `kid.primary`  | `#2F6F7E` | ação do aluno         |
 
 Contraste: `ink` sobre `surface` = 14,6:1; `primary` sobre `surface` = 5,2:1;
 branco sobre `primary` = 5,3:1. Todos atendem AA para texto normal.

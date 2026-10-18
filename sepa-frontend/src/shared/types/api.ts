@@ -1,4 +1,4 @@
-import type { AlunoResumo, RecomendacaoDetalhada, SessaoUsuario } from './models';
+import type { SessaoUsuario } from './models';
 
 export interface LoginResposta {
   access: string;
@@ -9,16 +9,6 @@ export interface LoginResposta {
 export interface RefreshResposta {
   access: string;
 }
-
-export interface ErroValidacaoApi {
-  [campo: string]: string[];
-}
-
-export interface ErroDetalheApi {
-  detail: string;
-}
-
-export type ErroApi = ErroValidacaoApi | ErroDetalheApi;
 
 export interface PontoCurva {
   data: string;
@@ -55,9 +45,4 @@ export interface RelatorioDesempenho {
   porAtividade: DesempenhoPorAtividade[];
   alertaEstagnacao: boolean;
   observacoes: string;
-}
-
-export interface PainelAluno {
-  aluno: AlunoResumo;
-  recomendacoesPendentes: RecomendacaoDetalhada[];
 }

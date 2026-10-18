@@ -52,9 +52,7 @@ export const recomendacoesHandlers = [
     }
 
     return HttpResponse.json(
-      [...recomendacoes]
-        .sort((a, b) => b.dataGeracao.localeCompare(a.dataGeracao))
-        .map(enriquecer),
+      [...recomendacoes].sort((a, b) => b.dataGeracao.localeCompare(a.dataGeracao)).map(enriquecer),
     );
   }),
 

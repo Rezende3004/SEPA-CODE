@@ -74,20 +74,6 @@ export default {
       spacing: {
         18: '4.5rem',
       },
-      keyframes: {
-        'fade-in': {
-          from: { opacity: '0' },
-          to: { opacity: '1' },
-        },
-        pop: {
-          '0%': { transform: 'scale(0.96)' },
-          '100%': { transform: 'scale(1)' },
-        },
-      },
-      animation: {
-        'fade-in': 'fade-in 180ms ease-out',
-        pop: 'pop 180ms ease-out',
-      },
     },
   },
   plugins: [],

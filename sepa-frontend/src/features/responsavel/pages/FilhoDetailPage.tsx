@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// RF-006 — detalhe simplificado do progresso do filho.
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, MessageSquare } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
@@ -6,21 +6,19 @@ import { LoadingState } from '@/shared/components/ui/LoadingState';
 import { ErrorState } from '@/shared/components/ui/ErrorState';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
 import { getApiErrorMessage } from '@/shared/lib/api-client';
-import { calcularIdade, diasAtras, paraInputDate } from '@/shared/lib/format';
+import { calcularIdade } from '@/shared/lib/format';
 import { rotas } from '@/app/router/paths';
 import { useAluno } from '@/features/alunos/hooks';
-import { usePlanos } from '@/features/planos/hooks';
-import { useRelatorioDesempenho } from '@/features/relatorios/hooks';
 import { ProgressoSimplificado } from '../components/ProgressoSimplificado';
+import { periodoPadraoResponsavel, usePlanosDoFilho, useProgressoFilho } from '../hooks';
 
 export function FilhoDetailPage() {
   const { alunoId } = useParams();
   const id = Number(alunoId);
   const aluno = useAluno(id);
-  const planos = usePlanos(id);
-  const [inicio] = useState(paraInputDate(diasAtras(90)));
-  const [fim] = useState(paraInputDate(new Date()));
-  const relatorio = useRelatorioDesempenho(id, inicio, fim);
+  const planos = usePlanosDoFilho(id);
+  const periodo = periodoPadraoResponsavel();
+  const relatorio = useProgressoFilho(id, periodo.inicio, periodo.fim);
 
   if (aluno.isLoading) return <LoadingState mensagem="Carregando informações…" />;
   if (aluno.isError) {

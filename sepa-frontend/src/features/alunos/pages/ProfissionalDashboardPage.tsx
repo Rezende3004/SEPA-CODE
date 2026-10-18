@@ -1,3 +1,4 @@
+// RF-002 / RF-005 / RF-009 — visão geral do profissional.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -35,7 +36,9 @@ export function ProfissionalDashboardPage() {
   const emAtencao = lista.filter((aluno) => aluno.tendencia === 'ESTAGNACAO');
   const pendentes = (recomendacoes.data ?? []).length;
   const mediaGeral =
-    lista.length > 0 ? lista.reduce((soma, aluno) => soma + aluno.mediaRecente, 0) / lista.length : 0;
+    lista.length > 0
+      ? lista.reduce((soma, aluno) => soma + aluno.mediaRecente, 0) / lista.length
+      : 0;
 
   const indicadores = [
     { rotulo: 'Alunos acompanhados', valor: `${lista.length}`, icone: Users, tom: 'primario' },

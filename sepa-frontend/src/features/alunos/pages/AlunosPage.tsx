@@ -1,3 +1,4 @@
+// RF-002 — lista e busca de alunos da instituição.
 import { useMemo, useState } from 'react';
 import { Search, UserPlus, Users } from 'lucide-react';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
@@ -76,7 +77,9 @@ export function AlunosPage() {
           }
           icone={<Users aria-hidden="true" className="size-6" />}
           acao={
-            busca ? undefined : <Button onClick={() => setModalAberto(true)}>Cadastrar aluno</Button>
+            busca ? undefined : (
+              <Button onClick={() => setModalAberto(true)}>Cadastrar aluno</Button>
+            )
           }
         />
       ) : null}

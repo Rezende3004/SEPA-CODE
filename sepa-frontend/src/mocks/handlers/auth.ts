@@ -1,6 +1,5 @@
 import { http, HttpResponse } from 'msw';
 import type {
-  Aluno,
   Especialidade,
   Profissional,
   Responsavel,
@@ -68,6 +67,12 @@ export const authHandlers = [
     }
     if (!usuario.ativo) {
       return respostaErro('Esta conta está desativada. Procure o administrador.', 403);
+    }
+    if (usuario.instituicaoId) {
+      const instituicao = db.instituicoes.find((item) => item.id === usuario.instituicaoId);
+      if (instituicao?.statusAssinatura === 'SUSPENSA') {
+        return respostaErro('A assinatura da instituição está suspensa.', 403);
+      }
     }
 
     return respostaAutenticacao(usuario);
@@ -176,7 +181,3 @@ export const authHandlers = [
     return HttpResponse.json({ usuario: montarSessao(usuario) });
   }),
 ];
-
-export function alunoDoUsuario(usuarioId: number): Aluno | undefined {
-  return db.alunos.find((item) => item.id === usuarioId);
-}

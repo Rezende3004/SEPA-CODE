@@ -13,7 +13,10 @@ interface ListaConversasProps {
 
 export function ListaConversas({ conversas, ativoId, basePath }: ListaConversasProps) {
   return (
-    <nav aria-label="Conversas" className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+    <nav
+      aria-label="Conversas"
+      className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface"
+    >
       {conversas.map((conversa) => (
         <Link
           key={conversa.usuarioId}

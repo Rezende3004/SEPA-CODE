@@ -1,3 +1,4 @@
+// RF-009 / RN-004 — recomendações da IA com decisão humana.
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import type { RecomendacaoDetalhada } from '@/shared/types';
@@ -121,7 +122,9 @@ export function RecomendacoesPage() {
 
       {recomendacoes.isSuccess && lista.length === 0 ? (
         <EmptyState
-          titulo={aba === 'pendentes' ? 'Nenhuma recomendação pendente' : 'Nenhuma decisão registrada'}
+          titulo={
+            aba === 'pendentes' ? 'Nenhuma recomendação pendente' : 'Nenhuma decisão registrada'
+          }
           descricao={
             aba === 'pendentes'
               ? 'Quando a análise identificar oportunidades de ajuste, as sugestões aparecem aqui para revisão.'

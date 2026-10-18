@@ -25,8 +25,7 @@ function detalhar(mensagem: Mensagem): MensagemDetalhada {
 
 function envolvem(usuarioId: number, outraParte?: number): Mensagem[] {
   return db.mensagens.filter((mensagem) => {
-    const participa =
-      mensagem.remetenteId === usuarioId || mensagem.destinatarioId === usuarioId;
+    const participa = mensagem.remetenteId === usuarioId || mensagem.destinatarioId === usuarioId;
     if (!participa) return false;
     if (outraParte === undefined) return true;
     return mensagem.remetenteId === outraParte || mensagem.destinatarioId === outraParte;

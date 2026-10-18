@@ -1,5 +1,6 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
-import { useAuth } from '@/features/auth/use-auth';
+import { lazy, Suspense, type ReactNode } from 'react';
+import { Outlet, Route, Routes } from 'react-router-dom';
+import { LoadingState } from '@/shared/components/ui/LoadingState';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 import { ProfissionalDashboardPage } from '@/features/alunos/pages/ProfissionalDashboardPage';
@@ -11,8 +12,6 @@ import { AlunoLayout } from '@/app/layouts/AlunoLayout';
 import { AlunoHomePage } from '@/features/execucao/pages/AlunoHomePage';
 import { ExecutarAtividadePage } from '@/features/execucao/pages/ExecutarAtividadePage';
 import { PreferenciasPage } from '@/features/execucao/pages/PreferenciasPage';
-import { RelatoriosPage } from '@/features/relatorios/pages/RelatoriosPage';
-import { RelatorioAlunoPage } from '@/features/relatorios/pages/RelatorioAlunoPage';
 import { ResponsavelHomePage } from '@/features/responsavel/pages/ResponsavelHomePage';
 import { FilhoDetailPage } from '@/features/responsavel/pages/FilhoDetailPage';
 import { RecomendacoesPage } from '@/features/recomendacoes/pages/RecomendacoesPage';
@@ -25,14 +24,28 @@ import { PublicLayout } from '@/app/layouts/PublicLayout';
 import { ForbiddenPage } from '@/app/pages/ForbiddenPage';
 import { HomeRedirect } from '@/app/pages/HomeRedirect';
 import { NotFoundPage } from '@/app/pages/NotFoundPage';
-import { destinoPorPerfil, rotas } from './paths';
+import { rotas } from './paths';
 import { RequireAuth } from './RequireAuth';
 import { RequireRole } from './RequireRole';
 
-function PainelPorPerfil() {
-  const { usuario } = useAuth();
-  if (!usuario) return <Navigate to={rotas.login} replace />;
-  return <Navigate to={destinoPorPerfil(usuario.tipoUsuario)} replace />;
+// Recharts é pesado; as telas de relatório só carregam quando necessárias.
+const RelatoriosPage = lazy(() =>
+  import('@/features/relatorios/pages/RelatoriosPage').then((modulo) => ({
+    default: modulo.RelatoriosPage,
+  })),
+);
+const RelatorioAlunoPage = lazy(() =>
+  import('@/features/relatorios/pages/RelatorioAlunoPage').then((modulo) => ({
+    default: modulo.RelatorioAlunoPage,
+  })),
+);
+
+function ComSuspense({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<LoadingState variante="cards" mensagem="Carregando relatórios…" />}>
+      {children}
+    </Suspense>
+  );
 }
 
 export function AppRouter() {
@@ -62,8 +75,22 @@ export function AppRouter() {
               element={<PlanoDetailPage />}
             />
             <Route path={rotas.profissional.atividades} element={<CatalogoPage />} />
-            <Route path={rotas.profissional.relatorios} element={<RelatoriosPage />} />
-            <Route path="/profissional/relatorios/:alunoId" element={<RelatorioAlunoPage />} />
+            <Route
+              path={rotas.profissional.relatorios}
+              element={
+                <ComSuspense>
+                  <RelatoriosPage />
+                </ComSuspense>
+              }
+            />
+            <Route
+              path="/profissional/relatorios/:alunoId"
+              element={
+                <ComSuspense>
+                  <RelatorioAlunoPage />
+                </ComSuspense>
+              }
+            />
             <Route path={rotas.profissional.recomendacoes} element={<RecomendacoesPage />} />
             <Route
               path={rotas.profissional.mensagens}
@@ -109,7 +136,6 @@ export function AppRouter() {
       </Route>
 
       <Route path="/" element={<HomeRedirect />} />
-      <Route path="/painel" element={<PainelPorPerfil />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

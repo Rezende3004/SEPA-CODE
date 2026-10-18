@@ -1,3 +1,4 @@
+// RNF-004 — preferências sensoriais por aluno (som, animações, fonte).
 import { useSyncExternalStore } from 'react';
 
 export type TamanhoFonte = 'normal' | 'grande' | 'muito-grande';

@@ -10,7 +10,7 @@ import { Select } from '@/shared/components/ui/Select';
 import { getApiErrorMessage } from '@/shared/lib/api-client';
 import { ESPECIALIDADES } from '@/shared/types';
 import { useCriarProfissionalAdmin, useInstituicoesAdmin } from '../hooks';
-import { profissionalAdminSchema, type DadosProfissionalAdmin } from '../api';
+import { profissionalAdminSchema, type DadosProfissionalAdmin } from '../schemas';
 
 interface ProfissionalFormModalProps {
   aberto: boolean;
@@ -83,7 +83,12 @@ export function ProfissionalFormModal({ aberto, onFechar }: ProfissionalFormModa
         </>
       }
     >
-      <form id="form-profissional" onSubmit={handleSubmit(aoEnviar)} noValidate className="space-y-4">
+      <form
+        id="form-profissional"
+        onSubmit={handleSubmit(aoEnviar)}
+        noValidate
+        className="space-y-4"
+      >
         {erro ? <Alert tom="perigo">{erro}</Alert> : null}
 
         <div className="grid gap-4 sm:grid-cols-2">

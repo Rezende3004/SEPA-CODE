@@ -88,7 +88,12 @@ export function PlanoFormModal({ aberto, alunoId, plano, onFechar }: PlanoFormMo
       <form id="form-plano" onSubmit={handleSubmit(aoEnviar)} noValidate className="space-y-4">
         {erro ? <Alert tom="perigo">{erro}</Alert> : null}
 
-        <Field label="Nome do plano" htmlFor="plano-nome" error={errors.nomePlano?.message} required>
+        <Field
+          label="Nome do plano"
+          htmlFor="plano-nome"
+          error={errors.nomePlano?.message}
+          required
+        >
           <Input
             id="plano-nome"
             invalido={Boolean(errors.nomePlano)}

@@ -1,3 +1,4 @@
+// RF-005 — relatório analítico por aluno.
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, LineChart } from 'lucide-react';
@@ -57,11 +58,15 @@ export function RelatorioAlunoPage() {
         descricao="Média, tentativas, tendência e curva de aprendizado por atividade. Use o período para investigar mudanças."
       />
 
-      <FiltroPeriodo inicio={inicio} fim={fim} onMudar={(novoInicio, novoFim) => {
-        setInicio(novoInicio);
-        setFim(novoFim);
-        setAtividadeSelecionada(null);
-      }} />
+      <FiltroPeriodo
+        inicio={inicio}
+        fim={fim}
+        onMudar={(novoInicio, novoFim) => {
+          setInicio(novoInicio);
+          setFim(novoFim);
+          setAtividadeSelecionada(null);
+        }}
+      />
 
       {relatorio.isLoading ? <LoadingState variante="cards" /> : null}
       {relatorio.isError ? (

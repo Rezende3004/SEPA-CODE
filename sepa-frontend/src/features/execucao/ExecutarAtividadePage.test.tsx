@@ -37,9 +37,7 @@ describe('execução de atividade pelo aluno (RF-008 e RF-004)', () => {
 
     renderizarComProviders(montarRotas(), { usuario: sessaoLucas(), rota: '/aluno/atividades/1' });
 
-    expect(
-      await screen.findByRole('heading', { name: 'Quem é este animal?' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Quem é este animal?' })).toBeInTheDocument();
 
     await usuario.click(screen.getByRole('button', { name: /Preciso de ajuda/ }));
     expect(await screen.findByText('Uma dica para você')).toBeInTheDocument();
@@ -55,9 +53,7 @@ describe('execução de atividade pelo aluno (RF-008 e RF-004)', () => {
       );
     }
 
-    expect(
-      await screen.findByRole('heading', { name: /Atividade concluída/ }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /Atividade concluída/ })).toBeInTheDocument();
 
     await waitFor(() => expect(db.historico.length).toBe(quantidadeInicial + 1));
     const registro = db.historico.at(-1);

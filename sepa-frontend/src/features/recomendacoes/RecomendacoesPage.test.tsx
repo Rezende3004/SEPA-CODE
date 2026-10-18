@@ -32,9 +32,7 @@ describe('aceite de recomendação da IA (RF-009 e RN-004)', () => {
     const cartao = await screen.findByRole('article', { name: /Helena Costa/ });
     expect(db.atividades.find((item) => item.id === 6)?.nivelDificuldade).not.toBe(nivelEsperado);
 
-    await usuario.click(
-      within(cartao).getByRole('button', { name: 'Aceitar recomendação' }),
-    );
+    await usuario.click(within(cartao).getByRole('button', { name: 'Aceitar recomendação' }));
     await usuario.click(await screen.findByRole('button', { name: 'Aplicar sugestão' }));
 
     expect(await screen.findByText(/Recomendação de Helena Costa aceita/)).toBeInTheDocument();

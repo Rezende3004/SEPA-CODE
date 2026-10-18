@@ -30,7 +30,12 @@ export function AlunoLayout() {
 
   const itens = [
     { rotulo: 'Minhas atividades', para: rotas.aluno.raiz, icone: Home, fim: true },
-    { rotulo: 'Preferências', para: rotas.aluno.preferencias, icone: SlidersHorizontal, fim: false },
+    {
+      rotulo: 'Preferências',
+      para: rotas.aluno.preferencias,
+      icone: SlidersHorizontal,
+      fim: false,
+    },
   ];
 
   return (
@@ -69,6 +74,7 @@ export function AlunoLayout() {
                   key={item.para}
                   to={item.para}
                   end={item.fim}
+                  aria-label={item.rotulo}
                   className={({ isActive }) =>
                     cn(
                       'sepa-kid-focus inline-flex min-h-12 items-center gap-2 rounded-lg px-3 text-sm font-semibold',

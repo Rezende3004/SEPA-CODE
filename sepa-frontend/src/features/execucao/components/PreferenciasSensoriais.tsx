@@ -1,6 +1,12 @@
 import { Volume2 } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/Card';
 import { tocarAcerto } from '../lib/audio';
 import {
   atualizarPreferencias,
@@ -11,7 +17,11 @@ import {
 const TAMANHOS: { valor: TamanhoFonte; rotulo: string; descricao: string }[] = [
   { valor: 'normal', rotulo: 'Normal', descricao: 'Tamanho padrão do texto.' },
   { valor: 'grande', rotulo: 'Grande', descricao: 'Texto um pouco maior.' },
-  { valor: 'muito-grande', rotulo: 'Muito grande', descricao: 'Texto bem maior, para leitura fácil.' },
+  {
+    valor: 'muito-grande',
+    rotulo: 'Muito grande',
+    descricao: 'Texto bem maior, para leitura fácil.',
+  },
 ];
 
 export function PreferenciasSensoriais({ alunoId }: { alunoId: number }) {
@@ -32,9 +42,7 @@ export function PreferenciasSensoriais({ alunoId }: { alunoId: number }) {
             <input
               type="checkbox"
               checked={preferencias.som}
-              onChange={(evento) =>
-                atualizarPreferencias(alunoId, { som: evento.target.checked })
-              }
+              onChange={(evento) => atualizarPreferencias(alunoId, { som: evento.target.checked })}
               className="size-6 accent-kid-primary"
             />
           </label>
@@ -112,9 +120,7 @@ export function PreferenciasSensoriais({ alunoId }: { alunoId: number }) {
                     name="tamanho-fonte"
                     value={opcao.valor}
                     checked={preferencias.tamanhoFonte === opcao.valor}
-                    onChange={() =>
-                      atualizarPreferencias(alunoId, { tamanhoFonte: opcao.valor })
-                    }
+                    onChange={() => atualizarPreferencias(alunoId, { tamanhoFonte: opcao.valor })}
                     className="size-5 accent-kid-primary"
                   />
                   {opcao.rotulo}

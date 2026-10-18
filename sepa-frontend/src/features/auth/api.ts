@@ -1,5 +1,10 @@
 import axios from 'axios';
-import type { InstituicaoPublica, LoginResposta, RefreshResposta, SessaoUsuario } from '@/shared/types';
+import type {
+  InstituicaoPublica,
+  LoginResposta,
+  RefreshResposta,
+  SessaoUsuario,
+} from '@/shared/types';
 import { API_URL, apiClient, guardarSessao } from '@/shared/lib/api-client';
 import { tokenStore } from '@/shared/lib/token-store';
 import type { DadosCadastro, DadosLogin } from './schemas';

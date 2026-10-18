@@ -1,3 +1,4 @@
+// RF-003 — catálogo de atividades da instituição.
 import { useMemo, useState } from 'react';
 import { BookOpenCheck } from 'lucide-react';
 import type { TipoAtividade } from '@/shared/types';

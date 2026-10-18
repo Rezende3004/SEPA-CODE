@@ -41,7 +41,7 @@ export function RecomendacaoCard({
     >
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="text-lg font-semibold text-ink">{recomendacao.alunoNome}</h3>
+          <h2 className="text-lg font-semibold text-ink">{recomendacao.alunoNome}</h2>
           <p className="text-xs text-muted">Gerada em {formatarData(recomendacao.dataGeracao)}</p>
         </div>
         <Badge variante={varianteStatus[recomendacao.status]}>
@@ -64,7 +64,7 @@ export function RecomendacaoCard({
       </div>
 
       <div>
-        <h4 className="text-sm font-semibold text-ink">Atividades sugeridas</h4>
+        <h3 className="text-sm font-semibold text-ink">Atividades sugeridas</h3>
         <ul className="mt-2 flex flex-wrap gap-2">
           {recomendacao.atividades.map((atividade) => (
             <li

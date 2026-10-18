@@ -15,7 +15,9 @@ export function PageHeader({ titulo, descricao, acoes, voltar, sobretitulo }: Pa
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0 space-y-1">
           {sobretitulo ? (
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">{sobretitulo}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+              {sobretitulo}
+            </p>
           ) : null}
           <h1 className="text-balance text-2xl font-bold text-ink sm:text-3xl">{titulo}</h1>
           {descricao ? <p className="max-w-3xl text-sm text-muted">{descricao}</p> : null}

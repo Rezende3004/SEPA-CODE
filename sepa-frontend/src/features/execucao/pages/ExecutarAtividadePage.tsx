@@ -1,3 +1,4 @@
+// RF-008 / RF-004 / RNF-004 — execução jogável e registro de histórico.
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ClipboardList } from 'lucide-react';

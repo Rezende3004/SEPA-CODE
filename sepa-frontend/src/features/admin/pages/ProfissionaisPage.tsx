@@ -1,3 +1,4 @@
+// RF-010 — criação e ativação de contas de profissionais.
 import { useState } from 'react';
 import { UserPlus, Users } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button';
