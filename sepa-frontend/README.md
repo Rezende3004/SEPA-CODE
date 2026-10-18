@@ -61,12 +61,14 @@ O painel de login também preenche as credenciais de demonstração com um cliqu
 No `.env`:
 
 ```env
-VITE_API_URL=https://api.sepa.exemplo/api
+VITE_API_URL=/api
 VITE_USE_MOCKS=false
 ```
 
-Nenhum componente muda. Os contratos consumidos estão em
-[`docs/api-contract.md`](docs/api-contract.md) e foram desenhados para o Django REST Framework.
+Com o backend em `http://localhost:8000`, o `vite.config.ts` faz proxy de `/api` automaticamente no
+ambiente de desenvolvimento. Em produção, use a URL pública em `VITE_API_URL` e configure o CORS no
+backend. Nenhum componente muda; o ajuste de refresh rotacionado está documentado em
+`docs/decisoes.md`.
 
 ## Funcionalidades
 

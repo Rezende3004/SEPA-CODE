@@ -138,3 +138,18 @@ componente → features/x/hooks.ts (React Query) → features/x/api.ts (Axios) �
   visível em todos os controles.
 - **Sem Figma:** a referência visual foi o gráfico do protótipo Python; essa limitação está
   registrada na Seção 16 do relatório.
+
+## 12. Integração com o backend Django (Fase 02)
+
+- O frontend passa a consumir a API real apenas com `VITE_USE_MOCKS=false` e `VITE_API_URL=/api`.
+- Em desenvolvimento, o Vite faz proxy de `/api` para `http://localhost:8000`; em produção,
+  configure `VITE_API_URL` e `CORS_ALLOWED_ORIGINS` no backend.
+- **Correção real no frontend:** o mock antigo devolvia apenas `access` no refresh, mas o backend
+  usa SimpleJWT com rotação e blacklist e devolve também um novo `refresh`. O `api-client` e o
+  `recuperarSessao` agora persistem `data.refresh` em `sessionStorage`; sem isso, o segundo refresh
+  usaria um token blacklistado e derrubaria a sessão.
+- Contratos verificados no backend: listas sem paginação, JSON camelCase, erros DRF, `403` para
+  acesso entre instituições, `409` para recomendação já decidida e `201` para cadastros/execuções.
+- A integração foi validada pelo teste de fumaça em
+  `sepa-backend/apps/usuarios/tests/test_smoke.py` e por requisições através do proxy do Vite.
+

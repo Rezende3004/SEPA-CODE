@@ -40,7 +40,7 @@ erros DRF (`{campo: [...]}` ou `{detail}`), tokens Bearer, IDs numéricos e data
 | 10 | Sem paginação | O frontend espera arrays. | `DEFAULT_PAGINATION_CLASS=None`. |
 | 11 | Seed | O seed TypeScript tem IDs fixos usados nas evidências. | `seed_demo` cria IDs explícitos (usuários 1–16, atividades 1–15, planos 1–6 etc.) e reseta sequences no PostgreSQL. |
 | 12 | Login | SimpleJWT usa `authenticate(username=...)` e devolve 401 para usuário inativo. | View customizada busca por e-mail, valida a senha, retorna 403 diferenciado para conta inativa/instituição suspensa e inclui `usuario` no corpo. |
-| 13 | OpenAPI | APIViews não têm serializer automaticamente. | Adicionados `@extend_schema` e hook oficial do camel-case; schema gerado sem erros, com 4 avisos de parâmetro de path em perfis com PK OneToOne. |
+| 13 | OpenAPI | APIViews não têm serializer automaticamente. | Adicionados `@extend_schema` e hook oficial do camel-case; schema gerado sem erros e sem avisos. |
 | 14 | Banco em testes | O ambiente local não tem PostgreSQL em todos os momentos. | `test.py` usa SQLite quando `DATABASE_URL` não está definido; CI e Docker usam PostgreSQL 16. Produção exige `DATABASE_URL`. |
 
 ## 3. Modelo e segurança

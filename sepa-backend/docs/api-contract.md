@@ -82,7 +82,7 @@ Erros: `401` credenciais inválidas; `403` conta desativada ou assinatura suspen
 { "refresh": "<jwt>" }
 ```
 
-`200`: `{ "access": "<jwt>" }`. `401` se inválido/expirado.
+`200`: `{ "access": "<jwt>", "refresh": "<novo refresh>" }` quando a rotação está ativa. `401` se inválido/expirado ou já blacklistado. O frontend persiste o novo refresh, quando presente.
 
 ### POST `/auth/register/`
 
