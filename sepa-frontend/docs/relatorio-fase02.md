@@ -245,9 +245,9 @@ sepa-frontend/
 - Fluxo: `feature/*` → Pull Request para `develop` (revisão + lint/test/build no CI) → Pull Request
   de `develop` para `main` ao fim da fase. Hotfixes usam `fix/*` a partir de `main`.
 
-Nesta entrega acadêmica, o histórico foi feito em `main` com um commit por etapa, para que a
-evolução técnica fique evidente na apresentação; a estratégia acima é a adotada no trabalho em
-equipe.
+Na Fase 02 o histórico foi feito direto em `main`. A partir da Fase 03 a estratégia acima está em
+uso: `develop` foi criada, `main` está protegida (merge apenas por Pull Request com o CI aprovado) e
+as mudanças entram por `feature/*` ou `fix/*`. Ver `CONTRIBUTING.md` na raiz do repositório.
 
 ### Conventional Commits
 
