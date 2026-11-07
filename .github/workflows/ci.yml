@@ -4,10 +4,19 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  quality:
+  backend:
+    name: Backend (Django + PostgreSQL)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sepa-backend
     services:
       postgres:
         image: postgres:16-alpine
@@ -24,7 +33,7 @@ jobs:
           --health-retries 12
     env:
       DATABASE_URL: postgres://sepa:sepa@localhost:5432/sepa
-      SECRET_KEY: ci-secret-key-not-used-in-production
+      SECRET_KEY: ci-secret-key-not-used-in-production-0123456789abcdef
       DJANGO_SETTINGS_MODULE: config.settings.test
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +41,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: sepa-backend/requirements.txt
       - name: Instalar dependências
         run: pip install -r requirements.txt
       - name: Ruff lint
@@ -45,8 +55,29 @@ jobs:
       - name: Auditoria de dependências
         run: pip-audit -r requirements.txt
       - name: Check de deploy
-        if: env.DATABASE_URL != ''
         run: |
           SECURE_SSL_REDIRECT=true ALLOWED_HOSTS=localhost \
           CSRF_TRUSTED_ORIGINS=http://localhost \
           python manage.py check --deploy --settings=config.settings.prod
+
+  frontend:
+    name: Frontend (React + TypeScript)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sepa-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: sepa-frontend/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Testes
+        run: npm test
+      - name: Verificação de tipos e build
+        run: npm run build

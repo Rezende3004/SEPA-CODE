@@ -234,7 +234,6 @@ sepa-backend/
 ├── ml/                   # modelo e metadata gerados (fora do git)
 ├── docs/                 # contrato, decisões, relatório, evidências
 ├── Dockerfile, docker-compose.yml, entrypoint.sh
-├── .github/workflows/ci.yml
 ├── pyproject.toml, requirements.txt, .env.example
 └── README.md
 ```
@@ -245,7 +244,7 @@ centralizadas, migrations versionadas e testes por app.
 Branches: `main` protegida + `develop` + `feature/*`; Conventional Commits
 (`feat(planos)`, `test(permissoes)`, `docs`, `chore`); PR com ruff, pytest e build.
 
-CI (`ci.yml`): Postgres 16 como serviço, instalação de `requirements.txt`, `ruff check`,
+CI (`.github/workflows/ci.yml`, na raiz do monorepo, job `backend`): Postgres 16 como serviço, instalação de `requirements.txt`, `ruff check`,
 `ruff format --check`, `makemigrations --check`, `pytest --cov --cov-fail-under=80`,
 `pip-audit` e `check --deploy`.
 
